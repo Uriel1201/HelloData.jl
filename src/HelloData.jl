@@ -1,4 +1,4 @@
-module hello_data
+module HelloData
 
 using ..Config
 println(ODB_DSN)
