@@ -1,7 +1,7 @@
-#using TOML
+using TOML
 
-#schemas_path = joinpath(@__DIR__, "..", "Schemas.toml")
-#=
+schemas_path = joinpath(@__DIR__, "..", "Schemas.toml")
+
 const SCHEMAS_TOML = Dict(table => content["columns"] for (table, content) in TOML.parsefile(schemas_path))
 
 
@@ -39,4 +39,3 @@ function my_data_types(table::String)::Vector{Pair{Symbol, Type}}
     return map(SCHEMAS_TOML[table]) do col
         Symbol(col["name"]) => parse_type_string(col["type"])
   end
-=£
