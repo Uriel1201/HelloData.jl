@@ -36,7 +36,7 @@ in the table schema stored in a Dictionary.
 - A vector of pairs containing the table's metadata
 """
 function my_data_types(table::String)::Vector{Pair{Symbol, Type}}
-    schemas_toml = Dict(table => content["columns"] for (table, content) in TABLES_TOML
+    schemas_toml = Dict(table => content["columns"] for (table, content) in TABLES_TOML)
     if !haskey(schemas_toml, table)
         error("Table '$table' not found in Schemas.toml")
     end
