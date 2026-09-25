@@ -10,3 +10,16 @@ description = "Table that represents information about my family"
     [[family.columns]]
     name = "birthday"
     type = "String"
+
+[users_01]
+description = "Table of user IDs, actions, and dates"
+
+    [[users_01.columns]]
+    name = "user_id"
+    type = "Float64"
+    [[users_01.columns]]
+    name = "action"
+    type = "String"
+    [[users_01.columns]]
+    name = "action_date"
+    type = "String"
