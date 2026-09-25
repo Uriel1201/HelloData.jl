@@ -1,7 +1,6 @@
 module HelloData
 
-using ..Config
-println(ODB_DSN)
-println("[Julia] Hello, Data!")
+greet() = "[Julia] Hello, Data!"
+include("src/config.jl")
 
 end # module HelloData
