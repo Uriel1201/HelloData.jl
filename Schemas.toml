@@ -16,10 +16,10 @@ description = "Table of user IDs, actions, and dates"
 
     [[users_01.columns]]
     name = "user_id"
-    type = "Float64"
+    type = "Int64"
     [[users_01.columns]]
     name = "action"
-    type = "String"
+    type = "Union{String, Missing}"
     [[users_01.columns]]
     name = "action_date"
-    type = "String"
+    type = "Union{String, Missing}"
