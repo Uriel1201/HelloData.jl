@@ -1,7 +1,7 @@
 name = "hello_data"
 uuid = "33651e08-34b8-4117-bf63-eaa102c6c4c5"
 version = "0.1.0"
-authors = ["Unknown "]
+authors = ["Uriel1201 <dante.1201mgie@gmail.com>"]
 
 [deps]
 DotEnv = "4dc1fcf4-5e3b-5448-94ab-0c38ec0385c1"
