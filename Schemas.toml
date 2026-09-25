@@ -23,3 +23,55 @@ description = "Table of user IDs, actions, and dates"
     [[users_01.columns]]
     name = "action_date"
     type = "Union{String, Missing}"
+
+[items_03]
+description = "table containing a list of dates and items ordered"
+
+    [[items_03.columns]]
+    name = "item_date"
+    type = "String"
+    [[items_03.columns]]
+    name = "item"
+    type = "Union{String, Missing}"
+
+[users_05]
+description = "Table of user acquiring products"
+
+    [[users_05.columns]]
+    name = "user_id"
+    type = "Int64"
+    [[users_05.columns]]
+    name = "product_id"
+    type = "Union{Int64, Missing}"
+    [[users_05.columns]]
+    name = "transaction_date"
+    type = "Union{String, Missing}"
+
+[transactions_02]
+description = "Table of transactions between two users"
+
+    [[transactions_02.columns]]
+    name = "sender"
+    type = "Int64"
+    [[transactions_02.columns]]
+    name = "receiver"
+    type = "Union{Int64, Missing}"
+    [[transactions_02.columns]]
+    name = "amount"
+    type = "Union{Float64, Missing}"
+    [[transactions_02.columns]]
+    name = "transaction_date"
+    type = "Union{String, Missing}"
+
+[users_04]
+description = "Table of user actions"
+
+    [[users_04.columns]]
+    name = "user_id"
+    type = "Int64"
+    [[users_04.columns]]
+    name = "action"
+    type = "Union{String, Missing}"
+    [[users_04.columns]]
+    name = "action_date"
+    type = "Union{String, Missing}"
