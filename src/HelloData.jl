@@ -4,4 +4,4 @@ using ..Config
 println(ODB_DSN)
 println("[Julia] Hello, Data!")
 
-end # module hello_data
+end # module HelloData
