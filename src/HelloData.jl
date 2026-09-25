@@ -1,6 +1,6 @@
 module HelloData
 
 greet() = "[Julia] Hello, Data!"
-include("src/config.jl")
+include("config.jl")
 
 end # module HelloData
