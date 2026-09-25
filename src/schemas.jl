@@ -38,4 +38,5 @@ function my_data_types(table::String)::Vector{Pair{Symbol, Type}}
     end
     return map(SCHEMAS_TOML[table]) do col
         Symbol(col["name"]) => parse_type_string(col["type"])
-  end
+    end
+end
