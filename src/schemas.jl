@@ -1,6 +1,7 @@
-#=using TOML
+using TOML
 
 schemas_path = joinpath(@__DIR__, "..", "Schemas.toml")
+#=
 const SCHEMAS_TOML = Dict(table => content["columns"] for (table, content) in TOML.parsefile(schemas_path))
 
 
