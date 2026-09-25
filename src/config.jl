@@ -1,7 +1,5 @@
 module Config
 
-using DotEnv
-
 env_path = joinpath(@__DIR__, "..", "env")
 DotEnv.load!(env_path)
 
