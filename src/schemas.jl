@@ -21,7 +21,7 @@ function parse_type_string(type_str::String)::Type
     end
 end
 
-
+#=
 """
     my_data_types(table::String) -> Vector{Pair{Symbol, Type}}
 Returns the column names and their corresponding Julia types defined
@@ -38,3 +38,4 @@ function my_data_types(table::String)::Vector{Pair{Symbol, Type}}
     return map(SCHEMAS_TOML[table]) do col
         Symbol(col["name"]) => parse_type_string(col["type"])
   end
+=£
