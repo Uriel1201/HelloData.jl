@@ -2,7 +2,26 @@
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "2836180a19d20e64c0aeeec2e6d427b03e8945f9"
+project_hash = "69c6803c489c22bcc03dbad1436837c3818207b1"
+
+[[deps.Artifacts]]
+uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
+version = "1.11.0"
+
+[[deps.DBInterface]]
+git-tree-sha1 = "265d7f87f329c063cbde41920f9d00713a43cedd"
+uuid = "a10d1c49-ce27-4219-8d33-6db1a4562965"
+version = "2.7.0"
+
+[[deps.DataAPI]]
+git-tree-sha1 = "abe83f3a2f1b857aac70ef8b269080af17764bbe"
+uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
+version = "1.16.0"
+
+[[deps.DataValueInterfaces]]
+git-tree-sha1 = "bfc1187b79289637fa0ef6d4436ebdfe6905cbd6"
+uuid = "e2d170a0-9d28-54be-80f0-106bbe20a464"
+version = "1.0.0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -14,6 +33,39 @@ deps = ["PrecompileTools"]
 git-tree-sha1 = "92e88cb68a5b10545234f46dfaeb2fa8a8a50c45"
 uuid = "4dc1fcf4-5e3b-5448-94ab-0c38ec0385c1"
 version = "1.0.0"
+
+[[deps.InlineStrings]]
+git-tree-sha1 = "06b65886c7577a3784d616e29f1302c2e36e389d"
+uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
+version = "1.4.6"
+
+    [deps.InlineStrings.extensions]
+    ArrowTypesExt = "ArrowTypes"
+    ParsersExt = "Parsers"
+
+    [deps.InlineStrings.weakdeps]
+    ArrowTypes = "31f734f8-188a-4ce0-8406-c8a06bd891cd"
+    Parsers = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
+
+[[deps.IteratorInterfaceExtensions]]
+git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
+uuid = "82899510-4779-5014-852e-03e436cf321d"
+version = "1.0.0"
+
+[[deps.JLLWrappers]]
+deps = ["Artifacts", "Preferences"]
+git-tree-sha1 = "7204148362dafe5fe6a273f855b8ccbe4df8173e"
+uuid = "692b3bcd-3c85-4b1f-b108-f13ce0eb3210"
+version = "1.8.0"
+
+[[deps.Libdl]]
+uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+version = "1.11.0"
+
+[[deps.OrderedCollections]]
+git-tree-sha1 = "05f45c2e0de6259db764adbfd2f1dc6d3f8de13c"
+uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
+version = "2.0.1"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
@@ -32,17 +84,71 @@ deps = ["Unicode"]
 uuid = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 version = "1.11.0"
 
+[[deps.Random]]
+deps = ["SHA"]
+uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+version = "1.11.0"
+
+[[deps.SHA]]
+uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+version = "0.7.0"
+
+[[deps.SQLite]]
+deps = ["DBInterface", "Random", "SQLite_jll", "Serialization", "Tables", "WeakRefStrings"]
+git-tree-sha1 = "2a4d0a468db82170e9111b89aaad4ef68d83599c"
+uuid = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
+version = "1.8.3"
+
+[[deps.SQLite_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Zlib_jll", "dlfcn_win32_jll"]
+git-tree-sha1 = "1ccd7f7235fe700bfb57dd6dd9984cce08f517d2"
+uuid = "76ed43ae-9a5d-5a62-8c75-30186b810ce8"
+version = "3.53.4+0"
+
+[[deps.Serialization]]
+uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+version = "1.11.0"
+
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 version = "1.0.3"
 
+[[deps.TableTraits]]
+deps = ["IteratorInterfaceExtensions"]
+git-tree-sha1 = "c06b2f539df1c6efa794486abfb6ed2022561a39"
+uuid = "3783bdb8-4a98-5b6b-af9a-565f29a5fe9c"
+version = "1.0.1"
+
+[[deps.Tables]]
+deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "OrderedCollections", "TableTraits"]
+git-tree-sha1 = "a94d9bdda1b7bed0046cea645639ab3f62196fac"
+uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
+version = "1.14.0"
+
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 version = "1.11.0"
 
+[[deps.WeakRefStrings]]
+deps = ["DataAPI", "InlineStrings"]
+git-tree-sha1 = "2a1059acbc918723b8f467c7e4e4342677333ed0"
+uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
+version = "2.0.0"
+
+[[deps.Zlib_jll]]
+deps = ["Libdl"]
+uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+version = "1.3.1+2"
+
+[[deps.dlfcn_win32_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "e141d67ffe550eadfb5af1bdbdaf138031e4805f"
+uuid = "c4b69c83-5512-53e3-94e6-de98773c479f"
+version = "1.4.2+0"
+
 [[deps.hello_data]]
-deps = ["DotEnv"]
+deps = ["DotEnv", "TOML"]
 path = "."
 uuid = "33651e08-34b8-4117-bf63-eaa102c6c4c5"
 version = "0.1.0"
