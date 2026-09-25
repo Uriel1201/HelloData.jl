@@ -2,9 +2,8 @@ using TOML
 
 schemas_path = joinpath(@__DIR__, "..", "Schemas.toml")
 
-const SCHEMAS_TOML = Dict(table => content["columns"] for (table, content) in TOML.parsefile(schemas_path))
-
-
+const TABLES_TOML = TOML.parsefile(schemas_path)
+        
 """
 ```julia
 parse_type_string(type_str::String)::Type
@@ -37,10 +36,11 @@ in the table schema stored in a Dictionary.
 - A vector of pairs containing the table's metadata
 """
 function my_data_types(table::String)::Vector{Pair{Symbol, Type}}
-    if !haskey(SCHEMAS_TOML, table)
-        error("Table '$table' not found in schemas.toml")
+    schemas_toml = Dict(table => content["columns"] for (table, content) in TABLES_TOML
+    if !haskey(schemas_toml, table)
+        error("Table '$table' not found in Schemas.toml")
     end
-    return map(SCHEMAS_TOML[table]) do col
+    return map(schemas_toml[table]) do col
         Symbol(col["name"]) => parse_type_string(col["type"])
     end
 end
