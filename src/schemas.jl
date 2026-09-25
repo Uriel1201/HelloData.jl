@@ -6,7 +6,9 @@ const SCHEMAS_TOML = Dict(table => content["columns"] for (table, content) in TO
 
 
 """
-    parse_type_string(type_str::String) -> Type
+```julia
+parse_type_string(type_str::String)::Type
+```
 Converts a String containing Julia code into an expression (Expr).
 Then evaluates the expression as Julia code in the module specified by @__MODULE__.
 # Arguments
@@ -24,7 +26,9 @@ end
 
 
 """
-    my_data_types(table::String) -> Vector{Pair{Symbol, Type}}
+```julia
+my_data_types(table::String)::Vector{Pair{Symbol, Type}}
+```
 Returns the column names and their corresponding Julia types defined
 in the table schema stored in a Dictionary.
 # Arguments
