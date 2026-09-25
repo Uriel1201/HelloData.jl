@@ -1,5 +1,3 @@
-using TOML
-
 toml_path = joinpath(@__DIR__, "..", "Schemas.toml")
 
 const SCHEMAS_TOML = TOML.parsefile(toml_path)
