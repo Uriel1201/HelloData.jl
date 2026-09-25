@@ -1,5 +1,5 @@
 module hello_data
 
-greet() = print("Hello World!")
+println("[Julia] Hello, Data!")
 
 end # module hello_data
