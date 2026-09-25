@@ -1,6 +1,6 @@
 module HelloData
 
-using TOML, DotEnv
+using TOML
 
 greet() = "[Julia] Hello, Data!"
 include("config.jl")
