@@ -5,6 +5,8 @@ authors = ["Uriel1201 <dante.1201mgie@gmail.com>"]
 
 [deps]
 DotEnv = "4dc1fcf4-5e3b-5448-94ab-0c38ec0385c1"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
 
 [compat]
 DotEnv = "1.0.0"
+TOML = "1.0.3"

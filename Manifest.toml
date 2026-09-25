@@ -2,7 +2,7 @@
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "e3413ce1b0806c28b9f53f892ff846dede6c076b"
+project_hash = "2836180a19d20e64c0aeeec2e6d427b03e8945f9"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -42,6 +42,7 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 version = "1.11.0"
 
 [[deps.hello_data]]
+deps = ["DotEnv"]
 path = "."
 uuid = "33651e08-34b8-4117-bf63-eaa102c6c4c5"
 version = "0.1.0"
