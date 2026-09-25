@@ -1,9 +1,9 @@
-using TOML
+#=using TOML
 
 schemas_path = joinpath(@__DIR__, "..", "Schemas.toml")
 const SCHEMAS_TOML = Dict(table => content["columns"] for (table, content) in TOML.parsefile(schemas_path))
 
-#=
+
 """
     parse_type_string(type_str::String) -> Type
 Converts a String containing Julia code into an expression (Expr).
