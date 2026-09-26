@@ -1,8 +1,7 @@
-module SQLiteUtils
+module SQLiteDBS
 
 using SQLite, Arrow, CSV, Tables, DBInterface
 
-export get_conn, insert_query, table_names, print_sqlite, create_arrow, ingest_csv
 """
     get_conn(f::Function, database_name::String = ":memory:", mode::String = "rwc")
 Executes the function `f` with an active SQLite connection and ensures the connection
@@ -125,4 +124,4 @@ function ingest_csv(stmt::SQLite.Stmt, data::CSV.Rows)::Nothing
     nothing
 end #ingest_cav
 
-end #module SQLiteUtils
+end #module SQLiteDBS
