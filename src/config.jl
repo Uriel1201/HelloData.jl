@@ -1,7 +1,5 @@
-database_config() = Dict(
-    :postgresql => ENV["URI_POSTGRESQL"],
-    :mysql => ENV["URI_MYSQL"],
-    :oracle_dsn => ENV["ODB_DSN"],
-    :oracle_user => ENV["ODB_USER"],
-    :oracle_password => ENV["ODB_PASSWORD"],
-)
+const URI_POSTGRESQL = ENV["URI_POSTGRESQL"]
+const URI_MYSQL = ENV["URI_MYSQL"]
+const ODB_DSN = ENV["ODB_DSN"]
+const ODB_USER = ENV["ODB_USER"]
+const ODB_PASSWORD = ENV["ODB_PASSWORD"]
