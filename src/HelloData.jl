@@ -10,6 +10,6 @@ include("config.jl")
 
 include("schemas.jl")
 
-include("sqlite_dbs")
+include("sqlite_dbs.jl")
 
 end # module HelloData
