@@ -1,10 +1,5 @@
 module Config
 
-using DotEnv
-
-env_path = joinpath(@__DIR__, "..", "env")
-DotEnv.load!(env_path)
-
 const URI_POSTGRESQL = get(ENV, "URI_POSTGRESQL", nothing)
 const URI_MYSQL = get(ENV, "URI_MYSQL", nothing)
 const ODB_DSN = get(ENV, "ODB_DSN", nothing)
