@@ -2,7 +2,7 @@
 
 julia_version = "1.12.6"
 manifest_format = "2.0"
-project_hash = "fdc8e67b3284b61ca5b866ff7aee324750b40bc6"
+project_hash = "968464c03caee0a04e2df3900c70b6daacb0c1cd"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -29,6 +29,7 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 version = "1.11.0"
 
 [[deps.HelloData]]
+deps = ["DBInterface", "SQLite", "Tables"]
 path = "."
 uuid = "c3e69449-1554-4fe0-b3c3-ece2cb7380ab"
 version = "0.1.0"
