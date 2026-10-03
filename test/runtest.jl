@@ -16,7 +16,7 @@ using Test, HelloData, SQLite, Tables, DBInterface
     @test_throws ErrorException HelloData.schema("ErrorException")
 end #testset
 
-testset "getting a SQLite connection" begin
+@testset "getting a SQLite connection" begin
     f = function (conn::SQLite.DB)
         result = DBInterface.execute(conn, "select 'Hello World!'")
         c = NamedTuple[]
@@ -125,3 +125,5 @@ end #testset
         @test SQLiteDBS.nextcolumntable!(result, ct; state = nothing) === nothing
     end
 end #testset
+
+
