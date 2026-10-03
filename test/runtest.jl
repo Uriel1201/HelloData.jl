@@ -1,4 +1,4 @@
-using Test, DBInterface, SQLite, Tables, HelloData
+using Test, HelloData
 
 @testset "loading TOML schemas" begin
     @test HelloData.parse_type_string("INT0") <: Integer
@@ -8,8 +8,11 @@ using Test, DBInterface, SQLite, Tables, HelloData
     @test_throws Regex("Failed to parse type 'invalid_input'") HelloData.parse_type_string(
         "invalid_input",
     )
-    @test typeof(HelloData.schema("family")) == Vector{Pair{Symbol,Type}}
-    @test map(first, HelloData.schema("family")) == [:name, :gender, :birthday]
-    @test map(last, HelloData.schema("family")) == [String, String, String]
+    z = zip(["name", "gender", "birthday"], ["TEXT0", "TEXT0", "TEXT0"])
+    HelloData.appendschema!("family", z; description="Table with information about my family")
+    schema = HelloData.schema("family")
+    @test typeof(schema) == Vector{Pair{Symbol,Type}}
+    @test map(first, schema) == [:name, :gender, :birthday]
+    @test map(last, schema) == [String, String, String]
     @test_throws ErrorException HelloData.schema("ErrorException")
 end #testset
