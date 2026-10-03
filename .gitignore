@@ -1,0 +1,4 @@
+env
+.config/
+sample_data/
+temp_clone/

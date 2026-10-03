@@ -1,0 +1,10 @@
+name = "HelloData"
+uuid = "c3e69449-1554-4fe0-b3c3-ece2cb7380ab"
+version = "0.1.0"
+authors = ["Unknown "]
+
+[deps]
+DotEnv = "4dc1fcf4-5e3b-5448-94ab-0c38ec0385c1"
+
+[compat]
+DotEnv = "1.0.0"
