@@ -100,6 +100,15 @@ end #insertquery
 """
     tablenames(conn::SQLite.DB) -> Vector{String}
 Returns a list of the table names available to query in the `SQLite.DB` database.
+# Arguments
+- `conn::SQLite.DB` : The current SQLite connection.
+# Example 
+```julia
+julia> SQLiteDBS.getconn() do conn
+           SQLiteDBS.tablenames(conn)
+       end
+[]
+```
 """
 function tablenames(conn::SQLite.DB)::Vector{String}
     return [t.name for t in SQLite.tables(conn)]
@@ -114,11 +123,13 @@ Shows a collection of NamedTuple's with exactly the first n rows of a query resu
 - query::SQLite.Query : The result of requesting data from a Sqlite table
 - n::Int64 : The first n rows of a SQLite.Query result 
 """
-function printsqlite(query::SQLite.Query, n::Int64=50)::Nothing 
+function printsqlite(query::SQLite.Query, n::Int=50)::Nothing 
+    n > 0 || throw(ArgumentError("n must be positive"))
     table = rowtable(Iterators.take(query, n))
     for row in table
-        println(row)
+        println(NamedTuple(row))
     end
+    nothing 
 end #printsqlite
 
 
