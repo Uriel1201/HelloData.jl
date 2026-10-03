@@ -1,0 +1,12 @@
+[family]
+description = "Table with information about my family"
+
+    [[family.columns]]
+    name = "name"
+    type = "TEXT0"
+    [[family.columns]]
+    name = "gender"
+    type = "TEXT0"
+    [[family.columns]]
+    name = "birthday"
+    type = "TEXT0"
