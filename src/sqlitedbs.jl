@@ -95,6 +95,7 @@ and a collection of symbols.
 # Example
 ```julia
 julia> SQLiteDBS.insertquery("users", [:id, :name])
+
 "INSERT INTO users (id, name) VALUES (?, ?)"
 ```
 """
