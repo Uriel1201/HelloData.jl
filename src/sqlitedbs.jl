@@ -12,7 +12,7 @@ is safely closed afterwards, even if an exception occurs.
 
 # Arguments
 - `f::Function`.         : Function receiving the argument (`db::SQLite.DB`).
-- `databasename::String` : The name of an archive.sqlite.
+- `databasepath::String` : The directory of an archive.sqlite.
 - `mode::String`.        : The mode query parameter that determines how the new database is opened.
 
 # Return
@@ -31,13 +31,13 @@ julia> getconn(f)
 ```
 """
 function getconn(f::Function, 
-    databasename::String = ":memory:",
+    databasepath::String = ":memory:";
     mode::String = "rwc"
 )
-    if databasename == ":memory:"
+    if databasepath == ":memory:"
         uri = "file::memory:?cache=private"
     else
-        uri = "file:$databasename?mode=$mode"
+        uri = "file:$databasepath?mode=$mode"
     end
     db = nothing 
     try
