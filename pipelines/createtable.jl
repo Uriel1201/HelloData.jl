@@ -1,6 +1,6 @@
 using HelloData, SQLite, DBInterface, Tables
 
-function main(table::String)
+function main(table::String, database::)
     SQLiteDBS.getconn("HelloData") do conn
         schema = HelloData.schema(table)
         columnames = map(first, schema)
