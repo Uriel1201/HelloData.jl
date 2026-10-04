@@ -1,0 +1,25 @@
+[family]
+description = "Table with information about my family"
+
+    [[family.columns]]
+    name = "name"
+    type = "TEXT0"
+    [[family.columns]]
+    name = "gender"
+    type = "TEXT0"
+    [[family.columns]]
+    name = "birthday"
+    type = "TEXT0"
+
+[users_01]
+description = "Table of user id's, actions, and dates"
+
+    [[users_01.columns]]
+    name = "user_id"
+    type = "INT0"
+    [[users_01.columns]]
+    name = "action"
+    type = "TEXT1"
+    [[users_01.columns]]
+    name = "action_date"
+    type = "TEXT1"
