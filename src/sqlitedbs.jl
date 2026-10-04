@@ -174,7 +174,7 @@ Each value of `nt` is added to the corresponding vector of `ct` using `push!`.
 # Return
 - Returns the modified `ct`.
 
-#Example
+# Example
 ```julia
 julia> ct = NamedTuple{(:id, :name)}((Vector{Int64}(), Vector{String}()))
 julia> nt = (id = 1, name = "Margarita")
