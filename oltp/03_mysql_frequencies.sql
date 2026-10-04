@@ -1,0 +1,30 @@
+WITH FREQUENCIES AS (
+    SELECT
+        ITEM,
+        COUNT(*) AS FREQUENCY,
+        DATES
+    FROM
+        ITEMS_03
+    GROUP BY
+        DATES,
+        ITEM
+), RANKED_ITEMS AS (
+    SELECT 
+        FREQUENCIES.ITEM,
+        RANK() OVER (
+            PARTITION BY
+                FREQUENCIES.DATES
+            ORDER BY
+                FREQUENCIES.FREQUENCY DESC
+        ) AS POSITION,
+        DATES
+    FROM
+        FREQUENCIES 
+)
+SELECT 
+    RANKED_ITEMS.ITEM,
+    RANKED_ITEMS.DATES
+FROM
+    RANKED_ITEMS
+WHERE 
+    RANKED_ITEMS.POSITION = 1
