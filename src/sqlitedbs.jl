@@ -1,8 +1,8 @@
 module SQLiteDBS
 
 using SQLite, Tables, DBInterface
+import ..:datadir
 
-datadir() = get(ENV, "DATA_DIR", nothing)
 
 """
     getconn(f::Function, 
