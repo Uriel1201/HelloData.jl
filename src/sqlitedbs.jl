@@ -1,7 +1,7 @@
 module SQLiteDBS
 
 using SQLite, Tables, DBInterface
-import ..:datadir
+import ..datadir
 
 
 """
