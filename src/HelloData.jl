@@ -1,7 +1,9 @@
 module HelloData
 
 using TOML
-export SQLiteDBS
+export SQLiteDBS, datadir
+
+datadir() = get(ENV, "DATA_DIR", nothing)
 
 include("schemas.jl")
 include("sqlitedbs.jl")
