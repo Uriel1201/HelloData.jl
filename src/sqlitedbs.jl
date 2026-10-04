@@ -1,8 +1,6 @@
 module SQLiteDBS
 
 using SQLite, Tables, DBInterface
-import ..datadir
-
 
 """
     getconn(f::Function, 
@@ -39,8 +37,7 @@ function getconn(f::Function,
     if databasename == ":memory:"
         uri = "file::memory:?cache=private"
     else
-        path = joinpath(datadir(), "$databasename.sqlite")
-        uri = "file:$path?mode=$mode"
+        uri = "file:$databasename?mode=$mode"
     end
     db = nothing 
     try
