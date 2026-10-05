@@ -1,7 +1,7 @@
 using HelloData, SQLite, DBInterface, Tables
 
 function main(table::String, databasename::String)
-    dbpath = joinpath(datadir(), databasename)
+    dbpath = joinpath(datadir(), "$databasename.sqlite")
     schema = HelloData.schema(table)
     columnames = map(first, schema)
     columntypes = map(last, schema)
