@@ -1,13 +1,13 @@
 using HelloData, DBInterface, SQLite
 
-function printresult(conn::SQLite.DB, table::String, queryfile::String)::Nothing
+function sqlitequery(conn::SQLite.DB, table::String, queryfile::String)::Nothing
     queryfilepath = joinpath(@__DIR__, "..", "oltp", queryfile)
     if isfile(queryfilepath)
         query = replace(read(queryfilepath, String), "{table}" => table)
         sql = DBInterface.execute(conn, query)
         SQLiteDBS.printsqlite(sql)
-    else 
-        throw(ArgumentError("queryfile not found: \$queryfilepath"))
+    else
+        throw(ArgumentError("queryfile not found: $queryfilepath"))
     end
     nothing
 end # printresult
@@ -16,7 +16,7 @@ end # printresult
 function main(table::String, queryfile::String)
     hello = joinpath(datadir(), "HelloData.sqlite")
     SQLiteDBS.getconn(hello) do conn
-        printresult(conn, table, queryfile)
+        sqlitequery(conn, table, queryfile)
     end
 end
 
