@@ -1,4 +1,4 @@
-using Test, HelloData, SQLite, Tables, DBInterface
+using Test, HelloData, SQLite, Tables, DBInterface, CSV
 
 @testset "loading TOML schemas" begin
     @test HelloData.parse_type_string("INT0")  == Union{Int64,Missing}
@@ -132,7 +132,9 @@ end #testset
     schema = HelloData.schema("family")
     columnames = map(first, schema)
     columntypes = map(last, schema)
-    rows = CSV.Rows(IOBuffer("nombre,genero,cumple\nMargarita,dog,01-feb-2018\n");
+    rows = CSV.Rows(IOBuffer("nombre,genero,cumple
+Margarita,dog,01-feb-2018
+");
         header=columnames,
         types=columntypes,
         skipto=2
@@ -150,7 +152,7 @@ end #testset
             rows
         )
         result = DBInterface.execute(conn, "SELECT * FROM family")
-        db_row = first(result)
+        db_row = NamedTuple(first(result))
         @test db_row == (name = "Margarita", gender = "dog", birthday = "01-feb-2018")
     end
 end #testset
