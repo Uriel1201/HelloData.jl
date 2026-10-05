@@ -24,9 +24,9 @@ function csvtosqlite(conn::SQLite.DB,
 )
     schema = HelloData.schema(table)
     columnames = map(first, schema)
-    columntypes = map(last, schemas)
+    columntypes = map(last, schema)
     data = loadfile(csvfile, columnames, columntypes)
-    HelloData.ingestcsv(conn, 
+    SQLiteDBS.ingestcsv(conn, 
         table, 
         columnames, 
         data; 
@@ -46,3 +46,5 @@ end
 if Base.@isdefined(PROGRAM_FILE) && abspath(PROGRAM_FILE) == abspath(@__FILE__)
     main(ARGS[1], ARGS[2])
 end
+
+
