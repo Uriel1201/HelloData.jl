@@ -1,6 +1,6 @@
 module SQLiteDBS
 
-using SQLite, Tables, DBInterface
+using SQLite, Tables, DBInterface, CSV
 
 """
     getconn(f::Function, 
@@ -130,8 +130,8 @@ end #tablenames
 Shows a collection of NamedTuple's with exactly the first n rows of a query result
 
 # Arguments
-- query::SQLite.Query : The result of requesting data from a Sqlite table
-- n::Int              : The first n rows of a SQLite.Query result.
+- `query::SQLite.Query` : The result of requesting data from a Sqlite table
+- `n::Int`              : The first n rows of a SQLite.Query result.
 
 # Example 
 ```julia
@@ -201,11 +201,11 @@ iteration, reducing the overhead of iterating over and converting the data
 into a columntable in separate steps.
 
 # Arguments
-- result::SQLite.Query : A data structure in `SQLite.jl` that represents 
-                         a lazy query or a row-by-row iterator over the query results.
-- ct::NamedTuple       : A `NamedTuple` of vectors serving as recipient to aggregate data from `result`
-- batchsize::Int64     : The size of the batch returned.
-- state=nothing        : The state of the current iteration, defaults to nothing for the first iteration 
+- `result::SQLite.Query` : A data structure in `SQLite.jl` that represents 
+                           a lazy query or a row-by-row iterator over the query results.
+- `ct::NamedTuple`       : A `NamedTuple` of vectors serving as recipient to aggregate data from `result`
+- `batchsize::Int64`     : The size of the batch returned.
+- `state=nothing`        : The state of the current iteration, defaults to nothing for the first iteration 
 
 # Return 
 - `nextstate::Integer` or `nothing`.
@@ -263,6 +263,18 @@ end #nextcolumntable!
         data::CSV.Rows;
         batchsize::Int=10000
     ) -> Nothing 
+Ingests a `CSV.Rows` object into a table in the current SQLite connection. 
+The column names and types must match those of the target table.
+
+# Arguments 
+- `table::String`              : The table that will ingest the data.
+- `columnames::Vector{Symbol}` : The vector that contains the columnnames of `table`.
+- `data::CSV.Rows`             : The CSV.Rows object that contains the data. 
+                                 This object only provides row access via iteration.
+- `batchsize::Int=10000`       : The size of the chunk that will be ingested by each iteration 
+
+# Return 
+- `nothing`
 """
 function ingestcsv(conn::SQLite.DB, 
     table::String,
@@ -280,6 +292,7 @@ function ingestcsv(conn::SQLite.DB,
             DBInterface.executemany(stmt, columntable(chunk))
         end
     end
+    nothing 
 end
 
 
