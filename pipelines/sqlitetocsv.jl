@@ -17,9 +17,9 @@ function loadfile(csvfile::String,
 end
 
 
-function main(csvfile::String, 
-    table::String, 
-    databasename::String; 
+function ingestcsv(conn::SQLite.DB, 
+    table::String;
+    data::CSV.Rows
     batchsize::Int=10000
 )
     schema = HelloData.schema(table)
