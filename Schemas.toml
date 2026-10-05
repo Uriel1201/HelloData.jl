@@ -23,3 +23,19 @@ description = "Table of user id's, actions, and dates"
     [[users_01.columns]]
     name = "action_date"
     type = "TEXT1"
+
+[transactions_02]
+description = "A table of transactions between two users."
+
+    [[transactions_02.columns]]
+    name = "sender"
+    type = "INT0"
+    [[transactions_02.columns]]
+    name = "receiver"
+    type = "INT1"
+    [[transactions_02.columns]]
+    name = "amount"
+    type = "REAL1"
+    [[transactions_02.columns]]
+    name = "transaction_date"
+    type = "TEXT1"
