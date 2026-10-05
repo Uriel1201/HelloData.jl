@@ -31,7 +31,7 @@ function main(csvfile::String,
             columnames, 
             columntypes
         )
-        SQLiteDBS.getconn(dbpath, "rw") do conn
+        SQLiteDBS.getconn(dbpath; mode="rw") do conn
             sql = SQLiteDBS.insertquery(table, columnames)
             stmt = SQLite.Stmt(conn, sql)
             DBInterface.transaction(conn) do
