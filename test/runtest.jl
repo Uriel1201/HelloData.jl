@@ -1,10 +1,12 @@
 using Test, HelloData, SQLite, Tables, DBInterface
 
 @testset "loading TOML schemas" begin
-    @test HelloData.parse_type_string("INT0") <: Integer
-    @test HelloData.parse_type_string("INT1") == Union{Int64,Missing}
-    @test HelloData.parse_type_string("TEXT0") == String
-    @test HelloData.parse_type_string("TEXT1") == Union{String,Missing}
+    @test HelloData.parse_type_string("INT0")  == Union{Int64,Missing}
+    @test HelloData.parse_type_string("INT1")  <: Integer 
+    @test HelloData.parse_type_string("TEXT1") == String
+    @test HelloData.parse_type_string("TEXT0") == Union{String,Missing}
+    @test HelloData.parse_type_string("REAL0") == Union{Float64, Missing}
+    @test HelloData.parse_type_string("REAL1") == Float64
     @test_throws Regex("Failed to parse type 'invalid_input'") HelloData.parse_type_string("invalid_input")
     
     z = zip(["name", "gender", "birthday"], ["TEXT0", "TEXT0", "TEXT0"])
@@ -126,4 +128,30 @@ end #testset
     end
 end #testset
 
-
+@testset "Ingesting csv files" begin
+    schema = HelloData.schema("family")
+    columnames = map(first, schema)
+    columntypes = map(last, schema)
+    rows = CSV.Rows(IOBuffer("nombre,genero,cumple\n"Margarita","perro","01-feb-2018"\n");
+        header=columnames,
+        types=columntypes,
+        skipto=2
+    )
+    SQLiteDBS.getconn() do conn
+        SQLite.createtable!(
+            conn,
+            "family",
+            Tables.Schema(columnames, columntypes)
+        )
+        SQLiteDBS.ingestcsv(
+            conn,
+            "family"
+            columnames,
+            rows
+        )
+        result = DBInterface.execute(conn, "SELECT * FROM family")
+        db_row = first(result)
+        csv_row = firs(rows)
+        @test csv_row == db_row
+    end
+end #testset
