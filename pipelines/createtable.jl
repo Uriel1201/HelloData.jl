@@ -28,5 +28,5 @@ end
 
 
 if Base.@isdefined(PROGRAM_FILE) && abspath(PROGRAM_FILE) == abspath(@__FILE__)
-    main(ARGS[1])
+    main(ARGS[1], ARGS[2])
 end
