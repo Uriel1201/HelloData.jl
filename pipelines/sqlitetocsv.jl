@@ -17,33 +17,6 @@ function loadfile(csvfile::String,
 end
 
 
-function ingestcsv(conn::SQLite.DB, 
-    table::String;
-    data::CSV.Rows
-    batchsize::Int=10000
-)
-    schema = HelloData.schema(table)
-    columnames = map(first, schema)
-    columntypes = map(last, schema)
-    dbpath = joinpath(datadir(), "$databasename.sqlite")
-    if isfile(dbpath)
-        data = loadfile(csvfile,
-            columnames, 
-            columntypes
-        )
-        SQLiteDBS.getconn(dbpath; mode="rw") do conn
-            sql = SQLiteDBS.insertquery(table, columnames)
-            stmt = SQLite.Stmt(conn, sql)
-            DBInterface.transaction(conn) do
-                for chunk in Iterators.partition(data, batchsize)
-                    DBInterface.executemany(stmt, columntable(chunk))
-                end
-            end
-        end
-    else
-        throw(ArgumentError("database path not found: $dbpath"))
-    end
-end
 
 
 if Base.@isdefined(PROGRAM_FILE) && abspath(PROGRAM_FILE) == abspath(@__FILE__)
