@@ -6,7 +6,7 @@ function loadfile(csvfile::String,
 )::CSV.Rows
     csvpath = joinpath(datadir(), "csv", csvfile)
     if isfile(csvpath)
-        return CSV.Rows(path;
+        return CSV.Rows(csvpath;
             header=columnames,
             skipto=2,
             types=columntypes
