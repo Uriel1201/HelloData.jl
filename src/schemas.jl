@@ -1,12 +1,12 @@
 tomlpath = joinpath(@__DIR__, "..", "Schemas.toml")
 
 const TYPEMAP = Dict{String, Type}(
-    "INT0"  => Int64,
-    "INT1"  => Union{Int64, Missing},
-    "TEXT0" => String,
-    "TEXT1" => Union{String, Missing},
-    "REAL0" => Float64,
-    "REAL1" => Union{Float64, Missing}
+    "INT1"  => Int64,
+    "INT0"  => Union{Int64, Missing},
+    "TEXT1" => String,
+    "TEXT0" => Union{String, Missing},
+    "REAL1" => Float64,
+    "REAL0" => Union{Float64, Missing}
 )
 
 
