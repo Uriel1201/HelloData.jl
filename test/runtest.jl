@@ -9,7 +9,7 @@ using Test, HelloData, SQLite, Tables, DBInterface
     @test HelloData.parse_type_string("REAL1") == Float64
     @test_throws Regex("Failed to parse type 'invalid_input'") HelloData.parse_type_string("invalid_input")
     
-    z = zip(["name", "gender", "birthday"], ["TEXT0", "TEXT0", "TEXT0"])
+    z = zip(["name", "gender", "birthday"], ["TEXT1", "TEXT1", "TEXT1"])
     HelloData.appendschema!("family", z; description="Table with information about my family")
     schema = HelloData.schema("family")
     @test typeof(schema) == Vector{Pair{Symbol,Type}}
