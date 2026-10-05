@@ -255,4 +255,32 @@ function nextcolumntable!(
     return exhausted ? nothing : st
 end #nextcolumntable!
 
+
+"""
+    function ingestcsv(
+        table::String,
+        columnames::Vector{Symbol},
+        data::CSV.Rows;
+        batchsize::Int=10000
+    ) -> Nothing 
+"""
+function ingestcsv(conn::SQLite.DB, 
+    table::String,
+    columnames::Vector{Symbol},
+    data::CSV.Rows;
+    batchsize::Int=10000
+)::Nothing 
+    stmt = SQLite.Stmt(conn, 
+        insertquery(table, 
+            columnames
+        )
+    )
+    DBInterface.transaction(conn) do
+        for chunk in Iterators.partition(data, batchsize)
+            DBInterface.executemany(stmt, columntable(chunk))
+        end
+    end
+end
+
+
 end # SQLiteDBS
