@@ -1,6 +1,6 @@
 using HelloData, SQLite, DBInterface, Tables
 
-function main(table::String, databasename::String)
+function sqlitetable(table::String, databasename::String)
     dbpath = joinpath(datadir(), "$databasename.sqlite")
     schema = HelloData.schema(table)
     columnames = map(first, schema)
@@ -26,7 +26,11 @@ function main(table::String, databasename::String)
     end
 end
 
+function main(table::String)
+    sqlitetable(table, "HelloData")
+end
+
 
 if Base.@isdefined(PROGRAM_FILE) && abspath(PROGRAM_FILE) == abspath(@__FILE__)
-    main(ARGS[1], ARGS[2])
+    main(ARGS[1])
 end
