@@ -15,7 +15,7 @@ end # printresult
 
 function main(table::String, queryfile::String)
     hello = joinpath(datadir(), "HelloData.sqlite")
-    SQLiteDBS.getconn(hello) do conn
+    SQLiteDBS.getconn(hello; mode="rw") do conn
         sqlitequery(conn, table, queryfile)
     end
 end
