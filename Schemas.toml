@@ -3,39 +3,39 @@ description = "Table with information about my family"
 
     [[family.columns]]
     name = "name"
-    type = "TEXT0"
+    type = "TEXT1"
     [[family.columns]]
     name = "gender"
-    type = "TEXT0"
+    type = "TEXT1"
     [[family.columns]]
     name = "birthday"
-    type = "TEXT0"
+    type = "TEXT1"
 
 [users_01]
 description = "Table of user id's, actions, and dates"
 
     [[users_01.columns]]
     name = "user_id"
-    type = "INT0"
+    type = "INT1"
     [[users_01.columns]]
     name = "action"
-    type = "TEXT1"
+    type = "TEXT0"
     [[users_01.columns]]
     name = "action_date"
-    type = "TEXT1"
+    type = "TEXT0"
 
 [transactions_02]
 description = "A table of transactions between two users."
 
     [[transactions_02.columns]]
     name = "sender"
-    type = "INT0"
-    [[transactions_02.columns]]
-    name = "receiver"
     type = "INT1"
     [[transactions_02.columns]]
+    name = "receiver"
+    type = "INT0"
+    [[transactions_02.columns]]
     name = "amount"
-    type = "REAL1"
+    type = "REAL0"
     [[transactions_02.columns]]
     name = "transaction_date"
-    type = "TEXT1"
+    type = "TEXT0"
