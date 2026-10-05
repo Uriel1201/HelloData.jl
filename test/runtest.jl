@@ -132,7 +132,7 @@ end #testset
     schema = HelloData.schema("family")
     columnames = map(first, schema)
     columntypes = map(last, schema)
-    rows = CSV.Rows(IOBuffer("nombre,genero,cumple\n"Margarita","perro","01-feb-2018"\n");
+    rows = CSV.Rows(IOBuffer("nombre,genero,cumple\nMargarita,dog,01-feb-2018\n");
         header=columnames,
         types=columntypes,
         skipto=2
@@ -145,13 +145,12 @@ end #testset
         )
         SQLiteDBS.ingestcsv(
             conn,
-            "family"
+            "family",
             columnames,
             rows
         )
         result = DBInterface.execute(conn, "SELECT * FROM family")
         db_row = first(result)
-        csv_row = firs(rows)
-        @test csv_row == db_row
+        @test db_row == (name = "Margarita", gender = "dog", birthday = "01-feb-2018")
     end
 end #testset
