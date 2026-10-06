@@ -12,11 +12,14 @@ using .SQLiteDBS, Arrow, SQLite
 
 datadir() = get(ENV, "DATA_DIR", nothing)
 
-
 function toarrow end
 
 """
-    toarrow(query::SQLite.Query, io::IO; batchsize::Int64=10000) -> Nothing
+    toarrow(query::SQLite.Query, 
+        schema::Vector{Pair{Symbol, Type}},
+        io::IO; 
+        batchsize::Int64=10000
+    ) -> Nothing
 """
 function toarrow(query::SQLite.Query,
     schema::Vector{Pair{Symbol, Type}},
