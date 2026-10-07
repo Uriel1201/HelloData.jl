@@ -26,17 +26,16 @@ function toarrow(query::SQLite.Query,
     io::IO;
     batchsize::Int64=10000
 )::Nothing
-    ct = NamedTuple{Tuple(first.(schema))}(Tuple(Vector{T}() for (_, T) in schema))
     open(Arrow.Writer, io, closeio=true) do writer
         st = nothing
         while true
+            ct = NamedTuple{Tuple(first.(schema))}(Tuple(Vector{T}() for (_, T) in schema))
             st = SQLiteDBS.nextcolumntable!(query,
                 ct;
                 batchsize = batchsize,
                 state = st
             )
             Arrow.write(writer, ct)
-            foreach(empty!, values(ct))
             st === nothing && break
         end
     end
