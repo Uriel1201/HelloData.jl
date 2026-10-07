@@ -1,4 +1,4 @@
-using HelloData, SQLite, DBInterface, 
+using HelloData, SQLite, DBInterface, Arrow
 
 function returntable(conn::SQLite.DB,
     table::String
@@ -37,3 +37,5 @@ end
 if Base.@isdefined(PROGRAM_FILE) && abspath(PROGRAM_FILE) == abspath(@__FILE__)
     main(ARGS[1])
 end
+
+
