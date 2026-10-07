@@ -4,13 +4,12 @@ using TOML
 
 include("schemas.jl")
 
-export SQLiteDBS, datadir
+export SQLiteDBS
 
 include("sqlitedbs.jl")
 
 using .SQLiteDBS, Arrow, SQLite
 
-datadir() = get(ENV, "DATA_DIR", nothing)
 
 function toarrow end
 
