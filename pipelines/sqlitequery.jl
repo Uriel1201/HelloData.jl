@@ -1,5 +1,7 @@
 using HelloData, DBInterface, SQLite
 
+datadir() = get(ENV, "DATA_DIR", nothing)
+
 function sqlitequery(conn::SQLite.DB, table::String, queryfile::String)::Nothing
     queryfilepath = joinpath(@__DIR__, "..", "oltp", queryfile)
     if isfile(queryfilepath)
