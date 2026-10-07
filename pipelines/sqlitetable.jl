@@ -1,5 +1,7 @@
 using HelloData, SQLite, DBInterface, Tables
 
+datadir() = get(ENV, "DATA_DIR", nothing)
+
 function sqlitetable(table::String, databasename::String)
     dbpath = joinpath(datadir(), "$databasename.sqlite")
     schema = HelloData.schema(table)
