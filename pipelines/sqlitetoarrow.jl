@@ -1,5 +1,8 @@
 using HelloData, SQLite, DBInterface, Arrow
 
+datadir() = get(ENV, "DATA_DIR", nothing)
+
+
 function returntable(conn::SQLite.DB,
     table::String
 )::SQLite.Query
