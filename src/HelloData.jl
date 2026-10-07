@@ -4,7 +4,7 @@ using TOML
 
 include("schemas.jl")
 
-export SQLiteDBS
+export SQLiteDBS, toarrow
 
 include("sqlitedbs.jl")
 
