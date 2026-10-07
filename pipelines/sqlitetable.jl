@@ -2,35 +2,29 @@ using HelloData, SQLite, DBInterface, Tables
 
 datadir() = get(ENV, "DATA_DIR", nothing)
 
-function sqlitetable(table::String, databasename::String)
-    dbpath = joinpath(datadir(), "$databasename.sqlite")
+function sqlitetable(conn::SQLite.DB, table::String)
     schema = HelloData.schema(table)
     columnames = map(first, schema)
     columntypes = map(last, schema)
-    if isfile(dbpath)
-        SQLiteDBS.getconn(dbpath; mode="rw") do conn
-            SQLite.createtable!(conn, 
-                table, 
-                Tables.Schema(columnames, 
-                columntypes
-                )
-            )
-        end
-    else
-        SQLiteDBS.getconn(dbpath) do conn
-            SQLite.createtable!(conn, 
-                table, 
-                Tables.Schema(columnames, 
-                columntypes
-                )
-            )
-        end
-    end
+    SQLite.createtable!(conn, 
+        table, 
+        Tables.Schema(columnames, 
+            columntypes
+        )
+    )
 end
 
 
 function main(table::String)
-    sqlitetable(table, "HelloData")
+    dbpath = joinpath(datadir(), "HelloData.sqlite")
+    if isfile(dbpath)
+        mode="rw"
+    else
+        mode="rwc"
+    end
+    SQLiteDBS.getconn(dbpath; mode=mode) do conn
+        sqlitetable(conn, table)
+    end
 end
 
 
