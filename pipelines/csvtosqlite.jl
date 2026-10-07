@@ -1,4 +1,4 @@
-using HelloData, DBInterface, SQLite, CSV, Tables
+using HelloData, DBInterface, SQLite, CSV
 
 datadir() = get(ENV, "DATA_DIR", nothing)
 
