@@ -1,5 +1,8 @@
 using HelloData, DBInterface, SQLite, CSV, Tables
 
+datadir() = get(ENV, "DATA_DIR", nothing)
+
+
 function loadfile(csvfile::String,
     columnames::Vector{Symbol},
     columntypes::Vector{Type}
