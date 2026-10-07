@@ -11,9 +11,9 @@ Executes the function `f` with an active SQLite connection and ensures the conne
 is safely closed afterwards, even if an exception occurs.
 
 # Arguments
-- `f::Function`.         : Function receiving the argument (`db::SQLite.DB`).
+- `f::Function`          : Function receiving the argument (`db::SQLite.DB`).
 - `databasepath::String` : The directory of an archive.sqlite.
-- `mode::String`.        : The mode query parameter that determines how the new database is opened.
+- `mode::String`         : The mode query parameter that determines how the new database is opened.
 
 # Return
 - The result of executing `f(db)`.
@@ -166,7 +166,7 @@ end #printsqlite
         nt::NamedTuple{names}
     ) where{names}
 Append a new `NamedTuple` `nt` to `ct`, a `NamedTuple` of vectors with the same keys as `nt`.
-Each value of `nt` is added to the corresponding vector of `ct` using `push!`.
+Each value of `nt` is added to the corresponding vector of `ct` using `push!`
 
 # Return
 - Returns the modified `ct`.
