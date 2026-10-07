@@ -41,7 +41,7 @@ end
 function main(table::String, csvfile::String)
     dbpath = joinpath(datadir(), "HelloData.sqlite")
     SQLiteDBS.getconn(dbpath; mode="rw") do conn
-        csvtosqlite(conn, table, csvfile)  
+        csvtosqlite(conn, table, csvfile; batchsize=5)  
     end
 end
 
@@ -49,5 +49,3 @@ end
 if Base.@isdefined(PROGRAM_FILE) && abspath(PROGRAM_FILE) == abspath(@__FILE__)
     main(ARGS[1], ARGS[2])
 end
-
-
