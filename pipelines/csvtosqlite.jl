@@ -12,7 +12,8 @@ function loadfile(csvfile::String,
         return CSV.Rows(csvpath;
             header=columnames,
             skipto=2,
-            types=columntypes
+            types=columntypes,
+            stripwhitespace=true
         )
     else
         throw(ArgumentError("csvpath not found: $csvpath"))
