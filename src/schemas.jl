@@ -1,4 +1,4 @@
-tomlpath = joinpath(@__DIR__, "..", "Schemas.toml")
+using TOML
 
 const BASETYPES = Dict{String, Type}(
     "INT"  => Int64,
@@ -6,11 +6,22 @@ const BASETYPES = Dict{String, Type}(
     "REAL" => Float64,
 )
 
+
 struct Column
     name::String
     type::String
     nullable::Bool
     primary_key::Bool
+end
+
+
+function Base.Dict(c::Column)
+    return Dict{String,Any}(
+        "name"        => c.name,
+        "type"        => c.type,
+        "nullable"    => c.nullable
+        "primary_key" => c.primary_key,
+    )
 end
 
 
@@ -37,21 +48,20 @@ end
         description::String="") -> Nothing
 Updates Schemas.toml by adding specifications for a new table.
 # Arguments 
-- `table::String`: The name of a new table to be added to `Schemas.toml`
-- `schema::Base.Iterators.Zip`: A Tuple iterator containing the column names and
-                                their types. The types are provided as strings and 
-                                represent type information from the database 
-                                not julia types.
-- `description::String`: A short description about the new table.
+- `table::String`           : The name of a new table to be added to `Schemas.toml`.
+- `columns::Vector{Column}` : A Vector of `Column`.
+- `tomlpath::String`        : The directory of the `toml` file.
+- `description::String`     : A short description about the table.
 """
 function appendschema!(table::String,
-    schema::Base.Iterators.Zip{Tuple{Vector{String}, Vector{String}}};
+    columns::Vector{Column},
+    tomlpath::String;
     description::String=""
 )
     schemas = isfile(tomlpath) ? TOML.parsefile(tomlpath) : Dict{String, Any}()
     schemas[table] = Dict(
             "description" => description,
-            "columns" => [Dict("name" => a, "type" => b) for (a,b) in schema],
+            "columns" => [Dict(c) for c in columns],
     )
     open(tomlpath, "w") do io
         TOML.print(io, schemas)
