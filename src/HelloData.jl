@@ -1,7 +1,5 @@
 module HelloData
 
-using TOML
-
 include("schemas.jl")
 
 export SQLiteDBS, toarrow
