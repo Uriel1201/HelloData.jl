@@ -1,13 +1,17 @@
 tomlpath = joinpath(@__DIR__, "..", "Schemas.toml")
 
-const TYPEMAP = Dict{String, Type}(
-    "INT1"  => Int64,
-    "INT0"  => Union{Int64, Missing},
-    "TEXT1" => String,
-    "TEXT0" => Union{String, Missing},
-    "REAL1" => Float64,
-    "REAL0" => Union{Float64, Missing}
+const BASETYPES = Dict{String, Type}(
+    "INT"  => Int64,
+    "TEXT" => String,
+    "REAL" => Float64,
 )
+
+struct Column
+    name::String
+    type::String
+    nullable::Bool
+    primary_key::Bool
+end
 
 
 """
@@ -15,16 +19,15 @@ const TYPEMAP = Dict{String, Type}(
 Converts a String into a Julia Type code.
 The content of the string is predetermined by TYPEMAP
 # Arguments
-- `typestr::String`: A String containing the Julia Type to be parsed
+- `base::String`   : A String containing the Julia `Type` to be parsed.
+- `nullable::Bool` : Specifies wether a column accepts `missing` values.
 # Return 
 - the Julia Type parsed from the String 
 """
-function parse_type_string(typestr::String)::Type
-    try
-        return TYPEMAP[typestr]
-    catch e
-        error("Failed to parse type '$typestr' defined in TOML. Error: $e")
-    end
+function parse_type_string(base::String, nullable::Bool)::Type
+    haskey(BASETYPES, base) || error("Type unknown: $base")
+    T = BASETYPES[base]
+    return nullable ? Union{T, Missing} : T
 end
 
 
