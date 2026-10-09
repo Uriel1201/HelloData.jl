@@ -1,13 +1,6 @@
 using TOML
 
-const BASETYPES = Dict{String, Type}(
-    "INT"  => Int64,
-    "TEXT" => String,
-    "REAL" => Float64,
-)
-
-
-struct Column
+struct ColumnSpec
     name::String
     sqltype::String
     nullable::Bool
@@ -15,18 +8,83 @@ struct Column
 end
 
 
-function Base.Dict(c::Column)
+struct Column
+    name::Symbol
+    type::Type
+    sqlitetype::String
+    nullable::Bool
+    primarykey::Bool
+end
+
+
+struct TableSchema
+    name::String
+    description::String
+    columns::Vector{Column}
+end
+
+    
+function Column(cs::ColumnSpec)
+    return Column(
+        Symbol(cs.name),
+        parse_type_string(cs.sqlitetype, cs.nullable)
+    )
+end
+
+    
+function TableSchema
+end
+
+    
+function Base.Dict(c::ColumnSpec)
     return Dict{String,Any}(
         "name"        => c.name,
         "sqltype"     => c.sqltype,
         "nullable"    => c.nullable,
-        "primary_key" => c.primary_key,
+        "primarykey"  => c.primarykey,
     )
 end
 
 
+const BASETYPES = Dict{String, Type}(
+    "INT"  => Int64,
+    "TEXT" => String,
+    "REAL" => Float64,
+)
+
+    
 """
-    parse_type_string(typestr::String)::Type
+    appendschema!(table::String,
+        columns::Vector{ColumnSpec};
+        description::String=""
+    ) -> Nothing
+Updates one `toml` file by adding specifications for a new table.
+# Arguments 
+- `table::String`               : The name of a new table to be added to `Schemas.toml`.
+- `columns::Vector{ColumnSpec}` : A Vector of `Column`.
+- `tomlpath::String`            : The directory of the `toml` file.
+- `description::String`         : A short description about the table.
+"""
+function appendschema!(table::String,
+    columns::Vector{ColumnSpec},
+    tomlpath::String;
+    description::String=""
+)
+    schemas = isfile(tomlpath) ? TOML.parsefile(tomlpath) : Dict{String, Any}()
+    schemas[table] = Dict(
+            "description" => description,
+            "columns" => [Dict(c) for c in columns],
+    )
+    open(tomlpath, "w") do io
+        TOML.print(io, schemas)
+    end
+end
+    
+
+"""
+    parse_type_string(typestr::String,
+        nullable::Bool
+    )::Type
 Converts a String into a Julia Type code.
 The content of the string is predetermined by TYPEMAP
 # Arguments
@@ -39,33 +97,6 @@ function parse_type_string(base::String, nullable::Bool)::Type
     haskey(BASETYPES, base) || error("Type unknown: $base")
     T = BASETYPES[base]
     return nullable ? Union{T, Missing} : T
-end
-
-
-"""
-    appendschema!(table::String,
-        schema::Base.Iterators.Zip{Tuple{Vector{String}, Vector{String}}};
-        description::String="") -> Nothing
-Updates Schemas.toml by adding specifications for a new table.
-# Arguments 
-- `table::String`           : The name of a new table to be added to `Schemas.toml`.
-- `columns::Vector{Column}` : A Vector of `Column`.
-- `tomlpath::String`        : The directory of the `toml` file.
-- `description::String`     : A short description about the table.
-"""
-function appendschema!(table::String,
-    columns::Vector{Column},
-    tomlpath::String;
-    description::String=""
-)
-    schemas = isfile(tomlpath) ? TOML.parsefile(tomlpath) : Dict{String, Any}()
-    schemas[table] = Dict(
-            "description" => description,
-            "columns" => [Dict(c) for c in columns],
-    )
-    open(tomlpath, "w") do io
-        TOML.print(io, schemas)
-    end
 end
 
 
