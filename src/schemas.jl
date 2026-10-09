@@ -53,6 +53,12 @@ const BASETYPES = Dict{String, Type}(
 )
 
     
+function TableSchema(table::String, d::AbstractDict)
+    specs = [ColumnSpec(c["name"], c["type"], c["nullable"], c["primary_key"])
+             for c in d["columns"]]
+    return TableSchema(table, d["description"], Column.(specs))
+    end
+    
 """
     appendschema!(table::String,
         columns::Vector{ColumnSpec};
