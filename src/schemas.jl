@@ -8,8 +8,7 @@ const BASETYPES = Dict{String, Type}(
 
 
 struct Column
-    name::Symbol
-    type::Type
+    name::String
     sqltype::String
     nullable::Bool
     primarykey::Bool
@@ -18,7 +17,7 @@ end
 
 function Base.Dict(c::Column)
     return Dict{String,Any}(
-        "name"        => String(c.name),
+        "name"        => c.name,
         "sqltype"     => c.sqltype,
         "nullable"    => c.nullable,
         "primary_key" => c.primary_key,
