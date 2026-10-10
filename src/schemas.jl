@@ -17,20 +17,22 @@ end
     
 function Column(d::Dict)
     return Column(
-        d["name"]
-        d["sqltype"]
-        d["nullable"]
-        d["primarykey"]
+        d["name"],
+        d["sqltype"],
+        d["nullable"],
+        d["primarykey"],
     )
 end
 
 
 function TableSchema(table::String, d::Dict)
-    cols = schemaspecs(d)
     return TableSchema(
         table,
         d["description"],
-        [Symbol(c.name) => parse_type_string(c.type, c.nullable) for c in cols],
+        [Symbol(c.name) => parse_type_string(c.type, 
+                               c.nullable
+                           ) for c in schemaspecs(d)
+        ],
     )
 end
 
@@ -51,7 +53,12 @@ const BASETYPES = Dict{String, Type}(
     "REAL" => Float64,
 )
 
-    
+
+function schemaspecs(d::Dict)
+    return [Column(coldict) for  coldictoin ]
+end
+
+
 """
     appendschema!(table::String,
         columns::Vector{ColumnSpec};
