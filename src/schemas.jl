@@ -1,6 +1,6 @@
 using TOML
 
-struct ColumnSpec
+struct Column
     name::String
     sqltype::String
     nullable::Bool
@@ -8,36 +8,35 @@ struct ColumnSpec
 end
 
 
-struct Column
-    name::Symbol
-    type::Type
-    sqlitetype::String
-    nullable::Bool
-    primarykey::Bool
-end
-
-
 struct TableSchema
-    name::String
+    tablename::String
     description::String
-    columns::Vector{Column}
+    columns::Vector{Pair{Symbol, Type}}
 end
 
     
-function Column(cs::ColumnSpec)
+function Column(d::Dict)
     return Column(
-        Symbol(cs.name),
-        parse_type_string(cs.sqlitetype, cs.nullable)
+        d["name"]
+        d["sqltype"]
+        d["nullable"]
+        d["primarykey"]
+    )
+end
+
+
+function TableSchema(table::String, d::Dict)
+    cols = schemaspecs(d)
+    return TableSchema(
+        table,
+        d["description"],
+        [Symbol(c.name) => parse_type_string(c.type, c.nullable) for c in cols],
     )
 end
 
     
-function TableSchema
-end
-
-    
-function Base.Dict(c::ColumnSpec)
-    return Dict{String,Any}(
+function Base.Dict(c::Column)
+    return Dict{String, Any}(
         "name"        => c.name,
         "sqltype"     => c.sqltype,
         "nullable"    => c.nullable,
@@ -52,12 +51,6 @@ const BASETYPES = Dict{String, Type}(
     "REAL" => Float64,
 )
 
-    
-function TableSchema(table::String, d::AbstractDict)
-    specs = [ColumnSpec(c["name"], c["type"], c["nullable"], c["primary_key"])
-             for c in d["columns"]]
-    return TableSchema(table, d["description"], Column.(specs))
-    end
     
 """
     appendschema!(table::String,
