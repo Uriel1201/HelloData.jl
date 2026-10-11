@@ -55,7 +55,7 @@ const BASETYPES = Dict{String, Type}(
 
 
 function schemaspecs(d::Dict)
-    return [Column(coldict) for  coldictoin ]
+    return [Column(coldict) for  coldict in d["columns"]]
 end
 
 
