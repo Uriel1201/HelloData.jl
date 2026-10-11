@@ -14,7 +14,7 @@ struct TableSchema
     columns::Vector{Pair{Symbol, Type}}
 end
 
-    
+
 function Column(d::Dict)
     return Column(
         d["name"],
@@ -25,18 +25,6 @@ function Column(d::Dict)
 end
 
 
-function TableSchema(table::String, d::Dict)
-    return TableSchema(
-        table,
-        d["description"],
-        [Symbol(c.name) => parse_type_string(c.type, 
-                               c.nullable
-                           ) for c in schemaspecs(d)
-        ],
-    )
-end
-
-    
 function Base.Dict(c::Column)
     return Dict{String, Any}(
         "name"        => c.name,
@@ -54,11 +42,6 @@ const BASETYPES = Dict{String, Type}(
 )
 
 
-function schemaspecs(d::Dict)
-    return [Column(coldict) for  coldict in d["columns"]]
-end
-
-
 """
     appendschema!(table::String,
         columns::Vector{ColumnSpec};
@@ -73,19 +56,16 @@ Updates one `toml` file by adding specifications for a new table.
 """
 function appendschema!(table::String,
     columns::Vector{Column},
-    tomlpath::String;
+    schemas::Dict{String, Any};
     description::String=""
 )
-    schemas = isfile(tomlpath) ? TOML.parsefile(tomlpath) : Dict{String, Any}()
     schemas[table] = Dict(
             "description" => description,
-            "columns" => [Dict(c) for c in columns],
+            "columns" => Dict.(columns),
     )
-    open(tomlpath, "w") do io
-        TOML.print(io, schemas)
-    end
+    return nothing 
 end
-    
+
 
 """
     parse_type_string(typestr::String,
@@ -106,6 +86,23 @@ function parse_type_string(base::String, nullable::Bool)::Type
 end
 
 
+function columnspec(d::Dict)::Vector{Column}
+    return Column.(d["columns"])
+end
+
+
+function TableSchema(table::String, d::Dict)
+    return TableSchema(
+        table,
+        d["description"],
+        [Symbol(c.name) => parse_type_string(c.sqltype, 
+                               c.nullable
+                           ) for c in columnspec(d)
+        ],
+    )
+end
+
+
 """
     schema(table::String)::Vector{Pair{Symbol, Type}}
 Returns the column names and their corresponding Julia types defined
@@ -115,8 +112,7 @@ in the table schema stored in Schemas.toml.
 # Return 
 - A vector of pairs containing the table's metadata
 """
-function schema(table::String)::TableSchema
-    schemas = TOML.parsefile(tomlpath)
-    haskey(schemas, table) || error("Table '$table' not found in Schemas.toml")
+function schema(table::String, schemas::Dict{String, Any})::TableSchema
+    haskey(schemas, table) || error("Table '$table' not found")
     return TableSchema(table, schemas[table])
 end
