@@ -38,6 +38,15 @@ struct TableSchema
 end
 
 
+"""
+    Column(d::Dict) -> Column
+Builds a `Column` from a dictionary, as read from the `toml` file.
+
+# Arguments
+- `d::Dict` : Dictionary with the keys `"name"`, `"sqltype"`, `"nullable"` and `"primarykey"`.
+
+Throws a `KeyError` if any of the keys is missing.
+"""
 function Column(d::Dict)
     return Column(
         d["name"],
@@ -48,6 +57,26 @@ function Column(d::Dict)
 end
 
 
+"""
+    Dict(c::Column) -> Dict{String, Any}
+Converts a `Column` into the dictionary used to store it in the `toml` file.
+Each of these dictionaries is one element of the vector stored under the
+key `"columns"` of a table. This is the inverse of `Column(d::Dict)`: 
+both must use the same keys.
+
+# Keys
+- `"name"`       : Column name.
+- `"sqltype"`    : SQL type name, a key of `BASETYPES`.
+- `"nullable"`   : Whether the column accepts `missing` values.
+- `"primarykey"` : Whether the column is part of the primary key.
+
+Every value is a `String` or a `Bool`, so the result can be written with `TOML.print`.
+
+# Example
+Into a toml file.
+[family] 
+columns = [{ name = "id", sqltype = "INT", nullable = false, primarykey = true }]
+"""
 function Base.Dict(c::Column)
     return Dict{String, Any}(
         "name"        => c.name,
