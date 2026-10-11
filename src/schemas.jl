@@ -1,5 +1,15 @@
 using TOML
 
+"""
+    Column(name, sqltype, nullable, primarykey)
+Specification of one table column, as stored in `Schemas.toml`.
+
+# Fields
+- `name::String`      : Column name.
+- `sqltype::String`   : SQL type name, a key of `BASETYPES` (`"INT"`, `"TEXT"`, `"REAL"`).
+- `nullable::Bool`    : Whether the column accepts `missing` values.
+- `primarykey::Bool`  : Whether the column is part of the primary key.
+"""
 struct Column
     name::String
     sqltype::String
@@ -8,6 +18,19 @@ struct Column
 end
 
 
+"""
+    TableSchema(tablename, description, columns)
+Schema of one table, with the column types already resolved to Julia types.
+
+# Fields
+- `tablename::String`                     : Name of the table.
+- `description::String`                   : A short description of the table.
+- `columns::Vector{Pair{Symbol, Type}}`   : Column names paired with their Julia types
+                                            (`Int64`, `Union{String, Missing}`, ...), 
+                                            in the order defined in `Schemas.toml`.
+
+Normally built with `schema(table, schemas)` rather than by hand.
+"""
 struct TableSchema
     tablename::String
     description::String
@@ -44,15 +67,16 @@ const BASETYPES = Dict{String, Type}(
 
 """
     appendschema!(table::String,
-        columns::Vector{ColumnSpec};
+        columns::Vector{ColumnSpec},
+        schemas::Dict{String, Any};
         description::String=""
     ) -> Nothing
-Updates one `toml` file by adding specifications for a new table.
+Updates the argument `schemas` by adding specifications for a new table.
 # Arguments 
-- `table::String`               : The name of a new table to be added to `Schemas.toml`.
-- `columns::Vector{Column}` : A Vector of `Column`.
-- `tomlpath::String`            : The directory of the `toml` file.
-- `description::String`         : A short description about the table.
+- `table::String`              : The name of a new table to be added to `schemas`.
+- `columns::Vector{Column}`    : A Vector of `Column`.
+- `schemas::Dict{String, Any}` : Dictionary with the specifications of the tables.
+- `description::String`        : A short description about the table.
 """
 function appendschema!(table::String,
     columns::Vector{Column},
