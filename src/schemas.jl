@@ -115,13 +115,8 @@ in the table schema stored in Schemas.toml.
 # Return 
 - A vector of pairs containing the table's metadata
 """
-function schema(table::String)::Vector{Pair{Symbol, Type}}
+function schema(table::String)::TableSchema
     schemas = TOML.parsefile(tomlpath)
-    if !haskey(schemas, table)
-        error("Table '$table' not found in Schemas.toml")
-    end
-    println("""Table: $table -> $(schemas[table]["description"])""")
-    return map(schemas[table]["columns"]) do col
-        Symbol(col["name"]) => parse_type_string(col["type"])
-    end
+    haskey(schemas, table) || error("Table '$table' not found in Schemas.toml")
+    return TableSchema(table, schemas[table])
 end
