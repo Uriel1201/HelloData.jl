@@ -67,12 +67,12 @@ end
 Updates one `toml` file by adding specifications for a new table.
 # Arguments 
 - `table::String`               : The name of a new table to be added to `Schemas.toml`.
-- `columns::Vector{ColumnSpec}` : A Vector of `Column`.
+- `columns::Vector{Column}` : A Vector of `Column`.
 - `tomlpath::String`            : The directory of the `toml` file.
 - `description::String`         : A short description about the table.
 """
 function appendschema!(table::String,
-    columns::Vector{ColumnSpec},
+    columns::Vector{Column},
     tomlpath::String;
     description::String=""
 )
