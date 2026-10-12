@@ -1,7 +1,15 @@
 using TOML
 
+const BASETYPES = Dict{String, Type}(
+    "INT"  => Int64,
+    "TEXT" => String,
+    "REAL" => Float64,
+)
+
+
 """
     Column(name, sqltype, nullable, primarykey)
+
 Specification of one table column, as stored in `Schemas.toml`.
 
 # Fields
@@ -20,6 +28,7 @@ end
 
 """
     TableSchema(tablename, description, columns)
+
 Schema of one table, with the column types already resolved to Julia types.
 
 # Fields
@@ -40,6 +49,7 @@ end
 
 """
     Column(d::Dict) -> Column
+
 Builds a `Column` from a dictionary, as read from the `toml` file.
 
 # Arguments
@@ -59,6 +69,7 @@ end
 
 """
     Dict(c::Column) -> Dict{String, Any}
+
 Converts a `Column` into the dictionary used to store it in the `toml` file.
 Each of these dictionaries is one element of the vector stored under the
 key `"columns"` of a table. This is the inverse of `Column(d::Dict)`: 
@@ -87,20 +98,15 @@ function Base.Dict(c::Column)
 end
 
 
-const BASETYPES = Dict{String, Type}(
-    "INT"  => Int64,
-    "TEXT" => String,
-    "REAL" => Float64,
-)
-
-
 """
     appendschema!(table::String,
         columns::Vector{ColumnSpec},
         schemas::Dict{String, Any};
         description::String=""
     ) -> Nothing
+
 Updates the argument `schemas` by adding specifications for a new table.
+
 # Arguments 
 - `table::String`              : The name of a new table to be added to `schemas`.
 - `columns::Vector{Column}`    : A Vector of `Column`.
@@ -123,27 +129,48 @@ end
 """
     parse_type_string(typestr::String,
         nullable::Bool
-    )::Type
+    ) -> Type
+
 Converts a String into a Julia Type code.
-The content of the string is predetermined by TYPEMAP
+The content of the string is predetermined by BASETYPES
+
 # Arguments
 - `base::String`   : A String containing the Julia `Type` to be parsed.
 - `nullable::Bool` : Specifies wether a column accepts `missing` values.
+
 # Return 
 - the Julia Type parsed from the String 
 """
-function parse_type_string(base::String, nullable::Bool)::Type
+function parse_type_string(base::String, 
+    nullable::Bool
+)::Type
     haskey(BASETYPES, base) || error("Type unknown: $base")
     T = BASETYPES[base]
     return nullable ? Union{T, Missing} : T
 end
 
 
-function columnspec(d::Dict)::Vector{Column}
-    return Column.(d["columns"])
+"""
+    columnspec(schemastable::Dict) -> Vector{Column}
+
+Converts the columns of one table specification into a `Vector{Column}`.
+
+# Arguments
+- `schemastable::Dict` : The specification of a single table, i.e. the value
+                         stored under the key `table` in `schemas` (`schemas[table]`). 
+                         It must contain the key `"columns"`, 
+                         a vector of dictionaries, one per column.
+
+Throws a `KeyError` if `"columns"` is missing, or if any column lacks one of
+its required keys (see `Column(d::Dict)`).
+"""
+function columnspec(schemastable::Dict)::Vector{Column}
+    return Column.(schemastable["columns"])
 end
 
 
+"""
+"""
 function TableSchema(table::String, d::Dict)
     return TableSchema(
         table,
@@ -157,11 +184,13 @@ end
 
 
 """
-    schema(table::String)::Vector{Pair{Symbol, Type}}
-Returns the column names and their corresponding Julia types defined
-in the table schema stored in Schemas.toml.
+    schema(table::String) -> TableSchema
+
+Returns the TableSchema of a table stored in `Dict{String, Any}`.
+
 # Arguments
-- `table::String`: A table name defined inside Schemas.toml
+- `table::String`: A table `key` difined in `Dict{String, Any}`.
+
 # Return 
 - A vector of pairs containing the table's metadata
 """
