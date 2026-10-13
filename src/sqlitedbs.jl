@@ -1,5 +1,3 @@
-using SQLite, Tables, DBInterface, CSV
-
 """
     getconn(f::Function, 
         databasepath::String = ":memory:";
