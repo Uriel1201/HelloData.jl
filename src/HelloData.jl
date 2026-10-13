@@ -4,7 +4,8 @@ using TOML, Arrow, SQLite, Tables, DBInterface, CSV
 
 
 function getconn end
-function 
+function registertable! end
+function insertquery end
 function toarrow end
 
 
