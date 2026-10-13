@@ -1,5 +1,3 @@
-using TOML
-
 const BASETYPES = Dict{String, Type}(
     "INT"  => Int64,
     "TEXT" => String,
