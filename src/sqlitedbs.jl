@@ -3,6 +3,7 @@
         databasepath::String = ":memory:";
         mode::String = "rwc"
     )
+
 Executes the function `f` with an active SQLite connection and ensures the connection
 is safely closed afterwards, even if an exception occurs.
 
@@ -86,13 +87,13 @@ end
 
 """
     insertquery(table::String, columnames::Vector{Symbol}) -> String
+
 Returns a string representing an `INSERT` query, given a table name 
 and a collection of symbols.
 
 # Example
 ```julia
 julia> insertquery(conn, "users", [:id, :name])
-
 "INSERT INTO users (id, name) VALUES (?, ?)"
 ```
 """
@@ -109,6 +110,7 @@ end #insertquery
 
 """
     tablenames(conn::SQLite.DB) -> Vector{String}
+
 Returns a list of the table names available to query in the `SQLite.DB` database.
 
 # Arguments
@@ -129,6 +131,7 @@ end #tablenames
 
 """
     printquery(query::SQLite.Query, n::Int64=50) -> Nothing 
+
 Shows a collection of NamedTuple's with exactly the first n rows of a query result
 
 # Arguments
@@ -169,6 +172,7 @@ end #printquery
         batchsize::Int64=10000, 
         state=nothing
     )
+
 Iterates over an `SQLite.Query`, returning a chunk of the results as a column table on each 
 iteration, reducing the overhead of iterating over and converting the data 
 into a columntable in separate steps.
@@ -230,12 +234,13 @@ end #nextcolumntable!
 
 
 """
-    function ingestcsv!(
+    function ingestcsv!(conn::SQLite.DB,
         table::String,
         columnames::Vector{Symbol},
         data::CSV.Rows;
         batchsize::Int=10000
     ) -> Nothing 
+
 Ingests a `CSV.Rows` object into a table in the current SQLite connection. 
 The column names and types must match those of the target table.
 
