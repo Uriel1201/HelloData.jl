@@ -86,7 +86,10 @@ end
 
 
 """
-    insertquery(table::String, columnames::Vector{Symbol}) -> String
+    insertquery(conn::SQLite.DB, 
+        table::String, 
+        columnames::Vector{Symbol}
+    ) -> String
 
 Returns a string representing an `INSERT` query, given a table name 
 and a collection of symbols.
@@ -97,7 +100,7 @@ julia> insertquery(conn, "users", [:id, :name])
 "INSERT INTO users (id, name) VALUES (?, ?)"
 ```
 """
-function insertquery(conn::SQLite.DB, 
+function insertquery(::SQLite.DB, 
     table::String, 
     columnames::Vector{Symbol}
 )::String
@@ -273,7 +276,7 @@ function ingestcsv!(conn::SQLite.DB,
         end
     end
     nothing 
-end #ingestcsv
+end #ingestcsv!
 
 
 """
