@@ -8,7 +8,7 @@ function registertable! end
 function insertquery end
 function tablenames end
 function printquery end
-function ingestcsv
+function ingestcsv! end
 function toarrow end
 
 
