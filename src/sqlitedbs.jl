@@ -164,35 +164,6 @@ end #printquery
 
 
 """
-    function pushct!(ct::NamedTuple{names, <:Tuple{Vararg{<:Vector}}},
-        nt::NamedTuple{names}
-    ) where{names}
-Append a new `NamedTuple` `nt` to `ct`, a `NamedTuple` of vectors with the same keys as `nt`.
-Each value of `nt` is added to the corresponding vector of `ct` using `push!`
-
-# Return
-- Returns the modified `ct`.
-
-# Example
-```julia
-julia> ct = NamedTuple{(:id, :name)}((Vector{Int64}(), Vector{String}()))
-julia> nt = (id = 1, name = "Margarita")
-julia> pushct!(ct, nt)
-
-(id = [1], name = ["Margarita"])
-```
-"""
-function pushct!(ct::NamedTuple{names, <:Tuple{Vararg{<:Vector}}},
-    nt::NamedTuple{names}
-) where{names}
-    for k in keys(ct)
-        push!(ct[k], nt[k])
-    end
-    return ct
-end #pushct!
-
-
-"""
     nextcolumntable!(result::SQLite.Query, 
         ct::NamedTuple{names, <:Tuple{Vararg{<:Vector}}};
         batchsize::Int64=10000, 
@@ -298,3 +269,54 @@ function ingestcsv!(conn::SQLite.DB,
     end
     nothing 
 end #ingestcsv
+
+
+"""
+    toarrow(query::SQLite.Query, 
+        columns::Vector{Pair{Symbol, Type}},
+        io::IO; 
+        batchsize::Int=10000
+    ) -> Nothing
+
+Converts the contents of a SQLite.Query object to Arrow format 
+and writes them to an IO object.
+
+# Arguments 
+- `query::SQLite.Query`                 : The result of requesting data from a Sqlite table.
+- `columns::Vector{Pair{Symbol, Type}}` : A vector of symbols and types that represents 
+                                          the schema of the table.
+- `io::IO`                              : An object that implements the IO interface 
+                                          and can be used to read or write data.
+- `batchsize::Int=10000`                : The size of a batch that will be write by each iteration.
+
+# Example 
+```julia
+julia> open(filepath, "w") do io
+           HelloData.toarrow(sql,
+               columns,
+               io;
+               batchsize=batchsize
+           )
+       end
+```
+"""
+function toarrow(query::SQLite.Query,
+    columns::Vector{Pair{Symbol, Type}},
+    io::IO;
+    batchsize::Int=10000
+)::Nothing
+    names = Tuple(first.(columns))
+    open(Arrow.Writer, io, closeio=false) do writer
+        st = nothing
+        while true
+            ct = NamedTuple{names}(Tuple(Vector{T}() for (_, T) in columns))
+            st = nextcolumntable!(query,
+                ct;
+                batchsize = batchsize,
+                state = st
+            )
+            Arrow.write(writer, ct)
+            st === nothing && break
+        end
+    end
+end # toarrow
