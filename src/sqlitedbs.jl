@@ -76,9 +76,8 @@ function registersqlite!(conn::SQLite.DB,
     table::String; 
     description::String=""
 )::Nothing
-    query = DBInterface.execute(conn, "PRAGMA table_info('$table')")
-    ct = columntable(query)
-    stypes = map((x, y) -> string(x,y), ct.type, ct.notnull)
+    ct = columntable(DBInterface.execute(conn, "PRAGMA table_info('$table')"))
+    columns = Column.()
     z = zip(ct.name, stypes)
     appendschema!(table, z; description)
     nothing 
