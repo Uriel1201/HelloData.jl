@@ -1,24 +1,81 @@
 using Test, HelloData, SQLite, Tables, DBInterface, CSV
 
-@testset "loading TOML schemas" begin
-    @test HelloData.parse_type_string("INT0")  == Union{Int64,Missing}
-    @test HelloData.parse_type_string("INT1")  <: Integer 
-    @test HelloData.parse_type_string("TEXT1") == String
-    @test HelloData.parse_type_string("TEXT0") == Union{String,Missing}
-    @test HelloData.parse_type_string("REAL0") == Union{Float64, Missing}
-    @test HelloData.parse_type_string("REAL1") == Float64
-    @test_throws Regex("Failed to parse type 'invalid_input'") HelloData.parse_type_string("invalid_input")
-    
-    z = zip(["name", "gender", "birthday"], ["TEXT0", "TEXT0", "TEXT0"])
-    HelloData.appendschema!("family", z; description="Table with information about my family")
-    schema = HelloData.schema("family")
-    @test typeof(schema) == Vector{Pair{Symbol,Type}}
-    @test map(first, schema) == [:name, :gender, :birthday]
-    @test map(last, schema) == [Union{String, Missing}, Union{String, Missing}, Union{String, Missing}]
-    @test_throws ErrorException HelloData.schema("ErrorException")
+
+@testset "schemas.jl" begin
+    @test HelloData.parse_type_string("INT", false)  == Int64
+    @test HelloData.parse_type_string("INT", true)   == Union{Int64, Missing}
+    @test HelloData.parse_type_string("TEXT", false) == String
+    @test HelloData.parse_type_string("TEXT", true)  == Union{String,Missing}
+    @test HelloData.parse_type_string("REAL", true)  == Union{Float64, Missing}
+    @test HelloData.parse_type_string("REAL", false) == Float64
+    @test_throws ErrorException("Type unknown: invalid_type") HelloData.parse_type_string("invalid_type", true)
+
+    schemas = Dict{String, Any}()
+    columns = [HelloData.Column("name", 
+                   "TEXT", 
+                   false, 
+                   true
+               ), 
+               HelloData.Column("gender", 
+                   "TEXT", 
+                   false, 
+                   false
+               )
+              ]
+    HelloData.appendschema!("family", 
+        columns, 
+        schemas; 
+        description="Table with information about my family"
+    )
+    @test haskey(schemas, "family")
+    @test schemas["family"]["description"] == "Table with information about my family"
+    @test schemas["family"]["columns"] isa Vector{<:AbstractDict}
+    @test HelloData.columnspec(schemas["family"]) isa Vector{HelloData.Column}
+    @test_throws KeyError HelloData.columnspec(Dict("description" => 
+                                                    "Table with information about my family"
+                                               )
+                          )
+    firstcolumn = HelloData.columnspec(schemas["family"])[1]
+    @test firstcolumn.name       == "name"
+    @test firstcolumn.sqltype    == "TEXT"
+    @test firstcolumn.nullable   == false
+    @test firstcolumn.primarykey == true
+
+    familyschema = HelloData.schema("family", schemas)
+    @test familyschema isa HelloData.TableSchema
+    @test familyschema.columns isa Vector{Pair{Symbol, Type}}
 end #testset
 
-@testset "getting a SQLite connection" begin
+
+@testset "utils.jl" begin 
+    ct = (id = Int[], name = String[])
+    nt = (id = 1, name = "Margarita")
+    result = HelloData.pushct!(ct, nt)
+    @test ct.id == [1]
+    @test ct.name == ["Margarita"]
+    @test result === ct
+    HelloData.pushct!(ct, (id = 2, name = "Uriel"))
+    HelloData.pushct!(ct, (id = 2, name = "Crimson"))
+    HelloData.pushct!(ct, (id = 3, name = "Miles"))
+    @test ct.id == [1, 2, 2, 3]
+    @test ct.name == ["Margarita", "Uriel", "Crimson", "Miles"]
+    nct = (id = Int[], amount = Float64[], active = Bool[], name = String[])
+    nnt = (id = 42, amount = 19.5, active = true, name = "Margarita")
+    HelloData.pushct!(nct, nnt)
+    @test nct.id     == [42]
+    @test nct.amount == [19.5]
+    @test nct.active == [true]
+    @test nct.name   == ["Margarita"]
+    d = HelloData.pushct!((id   = Union{Int64,Missing}[], 
+                           name = String[]), 
+            (id   = missing, 
+             name = "Margarita")
+        )
+    @test isequal(d.id, [missing])
+end
+
+
+@testset "sqlitedbs.jl" begin
     f = function (conn::SQLite.DB)
         result = DBInterface.execute(conn, "select 'Hello World!'")
         c = NamedTuple[]
@@ -27,66 +84,31 @@ end #testset
         end
         return c
     end
-    @test typeof(SQLiteDBS.getconn(f)) == Vector{NamedTuple}
-    SQLiteDBS.getconn() do conn
+    @test typeof(HelloData.getconn(f)) == Vector{NamedTuple}
+    HelloData.getconn() do conn
         @test typeof(conn) == SQLite.DB
         stmt = SQLite.Stmt(conn, "SELECT 'HELLO, WORLD!' AS greet")
         result = DBInterface.execute(stmt)
         row = first(result)
         @test row.greet == "HELLO, WORLD!"
-    end
-end #testset
-
-@testset "displaying results" begin
-    @test typeof(SQLiteDBS.insertquery("family", [:name, :gender, :is])) == String
-    @test SQLiteDBS.insertquery("family", [:name, :gender, :is]) ==
+        @test typeof(HelloData.insertquery(conn, "family", [:name, :gender, :is])) == String
+        @test HelloData.insertquery(conn, "family", [:name, :gender, :is]) ==
           "INSERT INTO family (name, gender, is) VALUES (?, ?, ?)"
-    SQLiteDBS.getconn() do conn
         SQLite.createtable!(
             conn,
             "family",
             Tables.Schema((:name, :gender, :is), (String, String, String)),
         )
-        list = SQLiteDBS.tablenames(conn)
         query = DBInterface.execute(conn, "PRAGMA table_info(family)")
-        @test typeof(list) == Vector{String}
-        @test list == ["family"]
-        @test SQLiteDBS.printsqlite(query, 2) == nothing
-        @test_nowarn SQLiteDBS.printsqlite(query, 20)
-    end
-end #testset
-
-@testset "pushing NamedTuples" begin
-    ct = (id = Int[], name = String[])
-    row = (id = 1, name = "Margarita")
-    result = SQLiteDBS.pushct!(ct, row)
-    @test ct.id == [1]
-    @test ct.name == ["Margarita"]
-    @test result === ct
-    SQLiteDBS.pushct!(ct, (id = 2, name = "Uriel"))
-    SQLiteDBS.pushct!(ct, (id = 2, name = "Crimson"))
-    SQLiteDBS.pushct!(ct, (id = 3, name = "Miles"))
-    @test ct.id == [1, 2, 2, 3]
-    @test ct.name == ["Margarita", "Uriel", "Crimson", "Miles"]
-    c = (id = Int[], amount = Float64[], active = Bool[], name = String[])
-    row = (id = 42, amount = 19.5, active = true, name = "Margarita")
-    SQLiteDBS.pushct!(c, row)
-    @test c.id == [42]
-    @test c.amount == [19.5]
-    @test c.active == [true]
-    @test c.name == ["Margarita"]
-    d = (id = Union{Int64,Missing}[], name = String[])
-    row = (id = missing, name = "Margarita")
-    SQLiteDBS.pushct!(d, row)
-    @test isequal(d.id, [missing])
-end #testset
-
-@testset "iterating over SQLite.Query" begin
-    n = 1000000
-    SQLiteDBS.getconn() do conn
+        @test typeof(HelloData.tablenames(conn)) == Vector{String}
+        @test HelloData.tablenames(conn) == ["family"]
+        @test HelloData.printquery(query, 2) == nothing
+        @test_nowarn HelloData.printquery(query, 20)
+  
+        n = 1000000
         ct = (id = Int64[], sensor = String[])
         for i = 1:n
-            SQLiteDBS.pushct!(ct, (id = i, sensor = "$i"))
+            HelloData.pushct!(ct, (id = i, sensor = "$i"))
         end
 
         SQLite.load!(ct, conn, "test")
@@ -102,7 +124,11 @@ end #testset
         sizes = []
 
         while true
-            st = SQLiteDBS.nextcolumntable!(result, nct; batchsize = batchsize, state = st)
+            st = HelloData.nextcolumntable!(result, 
+                nct; 
+                batchsize = batchsize, 
+                state = st
+            )
             append!(collected, nct.id)
             push!(sizes, length(nct.id))
             foreach(empty!, values(nct))
@@ -110,42 +136,65 @@ end #testset
         end
 
         @test isequal(
-            SQLiteDBS.pushct!(nct, (id = 7, sensor = missing)),
+            HelloData.pushct!(nct, (id = 7, sensor = missing)),
             (id = Int64[7], sensor = Union{String,Missing}[missing]),
         )
         @test collected == collect(1:n)
         @test sizes == [400000, 400000, 200000]
-        @test SQLiteDBS.nextcolumntable!(
-            result,
-            nct;
-            batchsize = batchsize,
-            state = nothing,
-        ) === nothing
+        @test HelloData.nextcolumntable!(
+                  result,
+                  nct;
+                  batchsize = batchsize,
+                  state = nothing,
+              ) === nothing
 
         SQLite.createtable!(conn, "empty_t", Tables.Schema((:id,), (Int,)))
         result = DBInterface.execute(conn, "SELECT * FROM empty_t")
-        @test SQLiteDBS.nextcolumntable!(result, ct; state = nothing) === nothing
+        @test HelloData.nextcolumntable!(result, ct; state = nothing) === nothing
     end
-end #testset
 
-@testset "Ingesting csv files" begin
-    schema = HelloData.schema("family")
-    columnames = map(first, schema)
-    columntypes = map(last, schema)
-    rows = CSV.Rows(IOBuffer("nombre,genero,cumple
-Margarita,dog,01-feb-2018
-");
-        header=columnames,
-        types=columntypes,
-        skipto=2
+    schemas = Dict{String, Any}()
+    columns = [HelloData.Column("name", 
+                   "TEXT", 
+                   true, 
+                   true
+               ), 
+               HelloData.Column("gender", 
+                   "TEXT", 
+                   true, 
+                   false
+               ),
+               HelloData.Column("birthday", 
+                   "TEXT", 
+                   true, 
+                   false
+               )
+              ]
+    
+    HelloData.appendschema!("family", 
+        columns, 
+        schemas; 
+        description="Table with information about my family"
     )
-    SQLiteDBS.getconn() do conn
+    family      = HelloData.schema("family", schemas)
+    columnames  = map(first, family.columns)
+    columntypes = map(last, family.columns)
+    csv = """
+    nombre,genero,cumple
+    Margarita,dog,01-feb-2018
+    """
+    rows = CSV.Rows(IOBuffer(csv);
+               header=columnames,
+               types=columntypes,
+               skipto=2
+           )
+    HelloData.getconn() do conn
         SQLite.createtable!(
             conn,
             "family",
             Tables.Schema(columnames, columntypes)
         )
-        SQLiteDBS.ingestcsv(
+        HelloData.ingestcsv!(
             conn,
             "family",
             columnames,
