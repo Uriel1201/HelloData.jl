@@ -1,12 +1,10 @@
 module HelloData
 
+using Arrow, SQLite
+
 include("schemas.jl")
 
-export SQLiteDBS, toarrow
-
 include("sqlitedbs.jl")
-
-using .SQLiteDBS, Arrow, SQLite
 
 
 function toarrow end
