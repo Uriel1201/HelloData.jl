@@ -7,6 +7,8 @@ function getconn end
 function registertable! end
 function insertquery end
 function tablenames end
+function printquery end
+function ingestcsv
 function toarrow end
 
 
