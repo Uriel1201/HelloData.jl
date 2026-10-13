@@ -100,7 +100,7 @@ end
 
 """
     appendschema!(table::String,
-        columns::Vector{ColumnSpec},
+        columns::Vector{Column},
         schemas::Dict{String, Any};
         description::String=""
     ) -> Nothing
@@ -127,7 +127,7 @@ end
 
 
 """
-    parse_type_string(typestr::String,
+    parse_type_string(base::String,
         nullable::Bool
     ) -> Type
 
@@ -199,15 +199,15 @@ end
 
 
 """
-    schema(table::String) -> TableSchema
+    schema(table::String, schemas::Dict{String, Any}) -> TableSchema
 
 Returns the TableSchema of a table stored in `Dict{String, Any}`.
 
 # Arguments
-- `table::String`: A table `key` difined in `Dict{String, Any}`.
+- `table::String`: A table `key` defined in `Dict{String, Any}`.
 
 # Return 
-- A vector of pairs containing the table's metadata
+- `TableSchema` of `table`
 """
 function schema(table::String, schemas::Dict{String, Any})::TableSchema
     haskey(schemas, table) || error("Table '$table' not found")
