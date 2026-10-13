@@ -6,6 +6,7 @@ using TOML, Arrow, SQLite, Tables, DBInterface, CSV
 function getconn end
 function registertable! end
 function insertquery end
+function tablenames end
 function toarrow end
 
 
