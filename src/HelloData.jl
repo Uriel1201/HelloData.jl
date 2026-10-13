@@ -1,6 +1,6 @@
 module HelloData
 
-using TOML, Arrow, SQLite, 
+using TOML, Arrow, SQLite, Tables, DBInterface, CSV
 
 include("schemas.jl")
 
