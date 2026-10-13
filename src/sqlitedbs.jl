@@ -1,5 +1,3 @@
-module SQLiteDBS
-
 using SQLite, Tables, DBInterface, CSV
 
 """
@@ -51,36 +49,40 @@ end #getconn
 
 
 """
-    registersqlite!(conn::SQLite.DB, 
-        table::String; 
+    registertable!(schemas::Dict{String, Any},
+        conn::SQLite.DB,
+        table::String;
         description::String=""
-    ) -> Nothing 
-Updates the Schemas.toml file by registering a table schema from a SQLite database.
+    ) -> Nothing
 
-# Arguments 
-- `conn::SQLite.DB`     : The current SQLite connection.
-- `table::String`       : The name of a SQLite table.
-- `description::String` : A short description about the table.
+Reads the structure of a SQLite table and adds its specification to `schemas`,
+modifying it in place. Does not write to disk.
+
+# Arguments
+- `schemas::Dict{String, Any}` : Dictionary with the specifications of the tables. Modified in place.
+- `conn::SQLite.DB`            : The current SQLite connection.
+- `table::String`              : The name of a SQLite table.
+- `description::String`        : A short description about the table.
 
 # Example
 ```julia
-julia> SQLiteDBS.getconn("mydatabase", "ro") do conn
-           SQLiteDBS.registersqlite!(conn, 
-               "mytable"; 
-               description="A short description"
-           )
+julia> schemas = TOML.parsefile(tomlpath)
+
+julia> getconn("mydatabase", "ro") do conn
+           registertable!(schemas, conn, "mytable";
+               description = "A short description")
        end
 ```
 """
-function registersqlite!(conn::SQLite.DB, 
+function registertable!(schemas::Dict{String, Any},
+    conn::SQLite.DB, 
     table::String; 
     description::String=""
 )::Nothing
     ct = columntable(DBInterface.execute(conn, "PRAGMA table_info('$table')"))
-    columns = Column.()
-    z = zip(ct.name, stypes)
-    appendschema!(table, z; description)
-    nothing 
+    columns = Column.(ct.name, ct.type, ct.notnull.==0, ct.pk.>0)
+    appendschema!(table, cols, schemas; description)
+    return nothing
 end
 
 
@@ -91,7 +93,7 @@ and a collection of symbols.
 
 # Example
 ```julia
-julia> SQLiteDBS.insertquery("users", [:id, :name])
+julia> insertquery("users", [:id, :name])
 
 "INSERT INTO users (id, name) VALUES (?, ?)"
 ```
@@ -113,8 +115,8 @@ Returns a list of the table names available to query in the `SQLite.DB` database
 
 # Example 
 ```julia
-julia> SQLiteDBS.getconn() do conn
-           SQLiteDBS.tablenames(conn)
+julia> getconn() do conn
+           tablenames(conn)
        end
 []
 ```
@@ -125,7 +127,7 @@ end #tablenames
 
 
 """
-    printsqlite(query::SQLite.Query, n::Int64=50) -> Nothing 
+    printquery(query::SQLite.Query, n::Int64=50) -> Nothing 
 Shows a collection of NamedTuple's with exactly the first n rows of a query result
 
 # Arguments
@@ -134,7 +136,7 @@ Shows a collection of NamedTuple's with exactly the first n rows of a query resu
 
 # Example 
 ```julia
-julia> SQLiteDBS.getconn() do conn
+julia> getconn() do conn
            SQLite.createtable!(conn, 
                "example", 
                Tables.Schema((:id, :name), 
@@ -142,7 +144,7 @@ julia> SQLiteDBS.getconn() do conn
                )
            )
            query = DBInterface.execute(conn, "PRAGMA table_info(example)")
-           SQLiteDBS.printsqlite(query)
+           printquery(query)
        end
 
 Database SQLite.DB("file::memory:?cache=private") connected
@@ -150,14 +152,14 @@ Database SQLite.DB("file::memory:?cache=private") connected
 (cid = 1, name = "name", type = "TEXT", notnull = 1, dflt_value = missing, pk = 0)
 ```
 """
-function printsqlite(query::SQLite.Query, n::Int=50)::Nothing 
+function printquery(query::SQLite.Query, n::Int=50)::Nothing 
     n > 0 || throw(ArgumentError("n must be positive"))
     table = rowtable(Iterators.take(query, n))
     for row in table
         println(NamedTuple(row))
     end
     nothing 
-end #printsqlite
+end #printquery
 
 
 """
@@ -174,7 +176,7 @@ Each value of `nt` is added to the corresponding vector of `ct` using `push!`
 ```julia
 julia> ct = NamedTuple{(:id, :name)}((Vector{Int64}(), Vector{String}()))
 julia> nt = (id = 1, name = "Margarita")
-julia> SQLiteDBS.pushct!(ct, nt)
+julia> pushct!(ct, nt)
 
 (id = [1], name = ["Margarita"])
 ```
@@ -217,7 +219,7 @@ julia>  st = nothing
         sizes = []
 
         while true
-            st = SQLiteDBS.nextcolumntable!(result, 
+            st = nextcolumntable!(result, 
                 nct; 
                 batchsize = batchsize, 
                 state = st
@@ -292,7 +294,4 @@ function ingestcsv(conn::SQLite.DB,
         end
     end
     nothing 
-end
-
-
-end # SQLiteDBS
+end #ingestcsv
