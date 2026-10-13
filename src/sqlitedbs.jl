@@ -86,7 +86,7 @@ end
 
 
 """
-    insertquery(table::String, column_names::String) -> String
+    insertquery(table::String, columnames::Vector{Symbol}) -> String
 Returns a string representing an `INSERT` query, given a table name 
 and a collection of symbols.
 
@@ -97,9 +97,9 @@ julia> SQLiteDBS.insertquery("users", [:id, :name])
 "INSERT INTO users (id, name) VALUES (?, ?)"
 ```
 """
-function insertquery(table::String, column_names::Vector{Symbol})::String
-    num_of_columns = length(column_names)
-    columns = join(column_names, ", ")
+function insertquery(table::String, columnames::Vector{Symbol})::String
+    num_of_columns = length(columnames)
+    columns = join(columnames, ", ")
     values = join(fill("?", num_of_columns), ", ")
     return "INSERT INTO $table ($columns) VALUES ($values)"
 end #insertquery
