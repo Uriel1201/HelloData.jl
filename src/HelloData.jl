@@ -17,6 +17,8 @@ include("schemas.jl")
 
 include("sqlitedbs.jl")
 
-println("[Julia] Hello, Data!, We are ready")
+function __init__()
+    println("[Julia] Hello, Data!, We are ready")
+end
 
 end # module HelloData
