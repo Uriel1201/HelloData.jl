@@ -2,7 +2,7 @@ using SQLite, Tables, DBInterface, CSV
 
 """
     getconn(f::Function, 
-        database_name::String = ":memory:", 
+        databasepath::String = ":memory:";
         mode::String = "rwc"
     )
 Executes the function `f` with an active SQLite connection and ensures the connection
@@ -68,7 +68,7 @@ modifying it in place. Does not write to disk.
 ```julia
 julia> schemas = TOML.parsefile(tomlpath)
 
-julia> getconn("mydatabase", "ro") do conn
+julia> getconn("mydatabase"; mode="ro") do conn
            registertable!(schemas, conn, "mytable";
                description = "A short description")
        end
@@ -81,7 +81,7 @@ function registertable!(schemas::Dict{String, Any},
 )::Nothing
     ct = columntable(DBInterface.execute(conn, "PRAGMA table_info('$table')"))
     columns = Column.(ct.name, ct.type, ct.notnull.==0, ct.pk.>0)
-    appendschema!(table, cols, schemas; description)
+    appendschema!(table, columns, schemas; description)
     return nothing
 end
 
@@ -93,12 +93,15 @@ and a collection of symbols.
 
 # Example
 ```julia
-julia> insertquery("users", [:id, :name])
+julia> insertquery(conn, "users", [:id, :name])
 
 "INSERT INTO users (id, name) VALUES (?, ?)"
 ```
 """
-function insertquery(table::String, columnames::Vector{Symbol})::String
+function insertquery(conn::SQLite.DB, 
+    table::String, 
+    columnames::Vector{Symbol}
+)::String
     num_of_columns = length(columnames)
     columns = join(columnames, ", ")
     values = join(fill("?", num_of_columns), ", ")
@@ -258,7 +261,7 @@ end #nextcolumntable!
 
 
 """
-    function ingestcsv(
+    function ingestcsv!(
         table::String,
         columnames::Vector{Symbol},
         data::CSV.Rows;
@@ -268,6 +271,7 @@ Ingests a `CSV.Rows` object into a table in the current SQLite connection.
 The column names and types must match those of the target table.
 
 # Arguments 
+- `conn::SQLite.DB`            : The current SQLite connection.
 - `table::String`              : The table that will ingest the data.
 - `columnames::Vector{Symbol}` : The vector that contains the columnnames of `table`.
 - `data::CSV.Rows`             : The CSV.Rows object that contains the data. 
@@ -277,14 +281,15 @@ The column names and types must match those of the target table.
 # Return 
 - `nothing`
 """
-function ingestcsv(conn::SQLite.DB, 
+function ingestcsv!(conn::SQLite.DB, 
     table::String,
     columnames::Vector{Symbol},
     data::CSV.Rows;
     batchsize::Int=10000
 )::Nothing 
     stmt = SQLite.Stmt(conn, 
-        insertquery(table, 
+        insertquery(conn,
+            table, 
             columnames
         )
     )
