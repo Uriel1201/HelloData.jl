@@ -170,6 +170,21 @@ end
 
 
 """
+    TableSchema(table::String, d::Dict) -> TableSchema
+
+Builds the schema of one table, with the column types already resolved to
+Julia types.
+
+# Arguments
+- `table::String` : Name of the table.
+- `d::Dict`       : The specification of that table, i.e. `schemas[table]`, as read
+  from the `toml` file. It must contain the keys `"description"` and `"columns"`.
+
+Each column's SQL type is converted with `parse_type_string`, so a `"TEXT"`
+column with `nullable = true` becomes `Union{String, Missing}`.
+
+Throws a `KeyError` if a required key is missing, and an error if a column has
+an unknown `sqltype`.
 """
 function TableSchema(table::String, d::Dict)
     return TableSchema(
