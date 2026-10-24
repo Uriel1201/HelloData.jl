@@ -4,7 +4,6 @@ const BASETYPES = Dict{String, Type}(
     "REAL" => Float64,
 )
 
-
 """
     Column(name, sqltype, nullable, primarykey)
 
