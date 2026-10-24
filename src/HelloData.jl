@@ -2,7 +2,6 @@ module HelloData
 
 using TOML, Arrow, SQLite, Tables, DBInterface, CSV
 
-
 function getconn end
 function registertable! end
 function insertquery end
